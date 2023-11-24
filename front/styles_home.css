@@ -1,0 +1,145 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+
+header {
+    background-color: #333;
+    padding: 10px;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .row {
+    width: 100%;
+}
+
+header h1 {
+    text-align: center;
+    color: #b9d690;
+}
+
+header a {
+    color: #b9d690;
+    text-decoration: none;
+}
+
+
+/* Main content styles */
+.main-content {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.main-content h2 {
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.main-content p {
+    line-height: 1.5;
+}
+
+/* Footer styles */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Links styles */
+a {
+    color: #1a1818;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.card {
+    width: 18rem;
+}
+
+#flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 180px;
+    margin-right: 180px;
+}
+
+#flex-container .card {
+    margin: 20px;
+    background-color: #acda6d;
+}
+
+.card-title {
+    text-align: center;
+}
+
+.card-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+}
+
+#ajout {
+    margin: 10px;
+    background-color: #d695d3;
+    width: 60%;
+}
+
+#flex-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    /* Ajoutez cette ligne */
+}
+
+#hist {
+    margin: 2px;
+    background-color: #d457cec2;
+    width: 40%;
+}
+
+#justi {
+    margin: 2px;
+    background-color: #d457cec2;
+    width: 40%;
+}
