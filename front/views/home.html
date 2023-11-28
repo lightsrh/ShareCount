@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareCount</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="../public/css/main.css">
+</head>
+
+<body>
+    <header>
+        <div class="column-6">
+            <div class="row-4">
+                <h1>ShareCount</h1>
+            </div>
+        </div>
+        <div class="column-2">
+            <a href="addmember.html" id="addMemberLink">Add Member</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                Dépenses totales :
+                Total
+            </div>
+        </div>
+
+        <div id="dynamicCardsContainer" class="container">
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary" id="getAllButton">Submit</button>
+                    <script>
+                        window.onload = function () {
+                            getAllItems();
+                        };
+
+                        function getAllItems() {
+                            fetch('/getAll')
+                                .then(response => response.json())
+                                .then(data => {
+                                    updateDynamicCards(data);
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors de la requête GET :', error);
+                                });
+                        }
+
+                        function updateDynamicCards(data) {
+                            const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
+
+                            dynamicCardsContainer.innerHTML = '';
+
+                            data.forEach(item => {
+                                const card = document.createElement('div');
+                                card.className = 'flex-item';
+                                card.innerHTML = `
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${item.nom} ${item.prenom}</h5>
+                                            <p class="card-text"> Dépenses: ${item.depense}</p>
+                                            <p class="card-text"> Remboursement dû: XXX</p>
+                                            <a href="ajout.html" class="btn" id="ajout">Ajout dépense</a>
+                                            <div class="flex-item" id="flex-row">
+                                                <a href="historique.html" class="btn " id="hist">Historique</a>
+                                                <a href="justificatif.html" class="btn " id="justi">Justificatif</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                dynamicCardsContainer.appendChild(card);
+                            });
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2022 WAO Tricount. All rights reserved.</p>
+    </footer>
+
+</body>
+
+</html>
+
