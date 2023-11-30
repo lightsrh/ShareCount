@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const { getAll } = require("../front/public/js/queries");
+const { getAll } = require("./queries");
 const port = 8080;
 
 const app = express();
