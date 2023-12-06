@@ -17,6 +17,16 @@ function getAll(request, response) {
     });
 }
 
+function addMember(request, response){
+    pool.query('INSERT INTO table_test (id, nom, prenom, depense) VALUES ($1, $2, $3, $4)', [request.body.id, request.body.nom, request.body.prenom, request.body.depense], (error, results) => {
+        if (error) {
+            throw error;
+        }
+        response.status(200).json(results.rows);
+    }
+    );
+}
+
 function create(request, response) {
     const { id, nom, prenom, depense } = request.body;
 
@@ -47,4 +57,5 @@ module.exports = {
     getAll,
     create,
     deleteById,
+    addMember
 };
