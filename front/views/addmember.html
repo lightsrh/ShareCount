@@ -26,47 +26,48 @@
     </header>
 
     <main>
-        <div class="container">
-            <div class="col">
-                <div class="row">
-                    Première ligne photo
-                </div>
-                <div class="row">
-                    Ajouter une photo
-                </div>
-                <div class="row">
-                    Prénom
-                </div>
-                <div class="row">
-                    Nom
-                </div>
-                <div class="row">
-                    Somme depensé par le membre
-                </div>
-            </div>
+       
+        <!--Page of creation for a new member, asking for name, firstname and first exepenses-->
+        <form id="ajout">
+            <p>
+                Nom : <input type="text" name="nom" id="nom">
+                Prénom : <input type="text" name="prenom" id="prenom">
+                Dépenses de départ : <input type="number" name="depenses" id="depenses">
+            </p>
+            <button type="button" onclick="ajouterEtudiant()">Ajouter</button>
+        </form> 
 
-        </div>
-        <section>
-            <h2>About WAO Tricount</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquet, nunc id aliquam lacinia, metus
-                nunc tincidunt nunc, id aliquam nunc justo vel nunc.</p>
-        </section>
-
-        <section>
-            <h2>How it Works</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquet, nunc id aliquam lacinia, metus
-                nunc tincidunt nunc, id aliquam nunc justo vel nunc.</p>
-        </section>
-
-        <section>
-            <h2>Contact Us</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquet, nunc id aliquam lacinia, metus
-                nunc tincidunt nunc, id aliquam nunc justo vel nunc.</p>
-        </section>
+        <script>
+            function ajouterEtudiant() {
+                var nom = document.getElementById("nom").value;
+                var prenom = document.getElementById("prenom").value;
+                var depenses = document.getElementById("depenses").value;
+                var etudiant = {
+                    "nom": nom,
+                    "prenom": prenom,
+                    "depenses": depenses
+                };
+                fetch('/addMember', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(etudiant)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        window.location.href = "home.html";
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
+        </script>
     </main>
 
     <footer>
-        <p>&copy; 2022 WAO Tricount. All rights reserved.</p>
+        <p>&copy; 2024 ShareCount. All rights reserved.</p>
     </footer>
     <!-- Bootstrap JS bundle -->
 
