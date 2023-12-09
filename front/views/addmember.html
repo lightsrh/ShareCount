@@ -32,7 +32,6 @@
             <p>
                 Nom : <input type="text" name="nom" id="nom">
                 Prénom : <input type="text" name="prenom" id="prenom">
-                Dépenses de départ : <input type="number" name="depenses" id="depenses">
             </p>
             <button type="button" onclick="ajouterEtudiant()">Ajouter</button>
         </form> 
@@ -41,11 +40,9 @@
             function ajouterEtudiant() {
                 var nom = document.getElementById("nom").value;
                 var prenom = document.getElementById("prenom").value;
-                var depenses = document.getElementById("depenses").value;
                 var etudiant = {
                     "nom": nom,
                     "prenom": prenom,
-                    "depenses": depenses
                 };
                 fetch('/addMember', {
                         method: 'POST',

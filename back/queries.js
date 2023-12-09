@@ -8,8 +8,17 @@ const pool = new Pool({
     port: 5432,
 });
 
+function getGroups(request, response) {
+    pool.query('SELECT * FROM groups;', (error, results) => {
+        if (error) {
+            throw error;
+        }
+        response.status(200).json(results.rows);
+    });
+}
+
 function getAll(request, response) {
-    pool.query('SELECT * FROM table_test;', (error, results) => {
+    pool.query('SELECT * FROM utilisateurs;', (error, results) => {
         if (error) {
             throw error;
         }
@@ -18,7 +27,7 @@ function getAll(request, response) {
 }
 
 function addMember(request, response){
-    pool.query('INSERT INTO table_test (id, nom, prenom, depense) VALUES ($1, $2, $3, $4)', [request.body.id, request.body.nom, request.body.prenom, request.body.depense], (error, results) => {
+    pool.query('INSERT INTO utilisateurs (nom, prenom) VALUES ($1, $2)', [request.body.nom, request.body.prenom], (error, results) => {
         if (error) {
             throw error;
         }
@@ -57,5 +66,6 @@ module.exports = {
     getAll,
     create,
     deleteById,
-    addMember
+    addMember,
+    getGroups
 };

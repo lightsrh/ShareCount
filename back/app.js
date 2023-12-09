@@ -1,9 +1,11 @@
 const express = require("express");
 const path = require("path");
-const { getAll, addMember } = require("./queries");
+const { getAll, addMember, getGroups } = require("./queries");
 const port = 8080;
 
 const app = express();
+
+app.use(express.json());
 
 app.use(express.static(path.join(__dirname, '../front/public')));
 app.use('/css', express.static(path.join(__dirname, '../front/public/css')));
@@ -32,3 +34,5 @@ app.get("/addmember.html", (req, res) => {
 app.get('/getAll', getAll);
 
 app.post('/addMember', addMember);
+
+app.get('/getGroups', getGroups);

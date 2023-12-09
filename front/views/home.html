@@ -4,6 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/main.css">
 
@@ -32,27 +33,19 @@
     </header>
 
     <main>
-        <div class="container">
-            <div class="row">
-                Dépenses totales :
-                Total
-            </div>
-        </div>
-
         <div id="dynamicCardsContainer" class="container">
         </div>
 
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary" id="getAllButton">Submit</button>
                     <script>
                         window.onload = function () {
                             getAllItems();
                         };
 
                         function getAllItems() {
-                            fetch('/getAll')
+                            fetch('/getGroups')
                                 .then(response => response.json())
                                 .then(data => {
                                     updateDynamicCards(data);
@@ -66,21 +59,17 @@
                             const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
 
                             dynamicCardsContainer.innerHTML = '';
-
+                            
                             data.forEach(item => {
                                 const card = document.createElement('div');
                                 card.className = 'flex-item';
                                 card.innerHTML = `
                                     <div class="card">
+                                        <img src="${item.image_path}" class="card-img-top" alt="Image du groupe">
                                         <div class="card-body">
-                                            <h5 class="card-title">${item.nom} ${item.prenom}</h5>
-                                            <p class="card-text"> Dépenses: ${item.depense}</p>
-                                            <p class="card-text"> Remboursement dû: XXX</p>
+                                            <h5 class="card-title">${item.nom}</h5>
                                             <a href="ajout.html" class="btn" id="ajout">Ajout dépense</a>
-                                            <div class="flex-item" id="flex-row">
-                                                <a href="historique.html" class="btn " id="hist">Historique</a>
-                                                <a href="justificatif.html" class="btn " id="justi">Justificatif</a>
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                 `;

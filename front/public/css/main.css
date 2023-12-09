@@ -75,8 +75,8 @@ a:hover {
 
 .container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: flex-start;
+    justify-content: space-around;
     align-items: center;
     margin-top: 50px;
 }
