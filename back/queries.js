@@ -1,15 +1,15 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    user: 'test',
-    host: 'postgresql.local',
-    database: 'base_test',
-    password: 'test',
+    user: 'postgres',
+    host: 'localhost',
+    database: 'sharecount', // Nom de la base de données que vous avez créée
+    password: 'postgres',
     port: 5432,
 });
 
 function getGroups(request, response) {
-    pool.query('SELECT * FROM groups;', (error, results) => {
+    pool.query('SELECT * FROM groupe;', (error, results) => {
         if (error) {
             throw error;
         }
@@ -21,7 +21,7 @@ function getUsers(request, response) {
     const groupId = request.params.groupId;
 
     pool.query(
-        'SELECT users.* FROM usergroup INNER JOIN users ON usergroup.utilisateur_id = users.id WHERE usergroup.groupe_id = $1;',
+        'SELECT utilisateurs.* FROM utilisateur-groupe INNER JOIN utilisateurs ON utilisateur-group.utilisateur_id = utilisateurs.id WHERE utilisateur-groupe.groupe_id = $1;',
         [groupId],
         (error, results) => {
             if (error) {
