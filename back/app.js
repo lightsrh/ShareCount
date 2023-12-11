@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const { getAll, addMember, getGroups } = require("./queries");
+const { getUsers, addMember, getGroups } = require("./queries");
 const port = 8080;
 
 const app = express();
@@ -30,9 +30,8 @@ app.get("/addmember.html", (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/addmember.html"));
 });
 
-
-app.get('/getAll', getAll);
-
 app.post('/addMember', addMember);
 
 app.get('/getGroups', getGroups);
+
+app.get('/getUsers/:groupId', getUsers);

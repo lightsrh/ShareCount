@@ -41,11 +41,15 @@
                 <div class="col-12">
                     <script>
                         window.onload = function () {
-                            getAllItems();
+                            getUsers();
                         };
 
-                        function getAllItems() {
-                            fetch('/getGroups')
+                        function getUsers() {
+                            // Récupérer l'ID du groupe depuis l'URL
+                            const groupId = new URLSearchParams(window.location.search).get('id');
+
+                            // Faire une requête pour récupérer les utilisateurs du groupe
+                            fetch(`/getUsers/${groupId}`)
                                 .then(response => response.json())
                                 .then(data => {
                                     updateDynamicCards(data);
@@ -64,28 +68,23 @@
                                 const card = document.createElement('div');
                                 card.className = 'flex-item';
                                 card.innerHTML = `
-                                    <div class="card" onclick="redirectToGroupPage('${item.id}')">
-                                        <img src="${item.image_path}" class="card-img-top" alt="Image du groupe">
+                                    <div class="card">
+                                        <img src="${item.image_path}" class="card-img-top" alt="Image de l'utilisateur">
                                         <div class="card-body">
                                             <h5 class="card-title">${item.nom}</h5>
-                                            <a href="ajout.html" class="btn" id="ajout">Ajout dépense</a>
+                                            <!-- Ajoutez ici d'autres informations de l'utilisateur -->
                                         </div>
                                     </div>
                                 `;
                                 dynamicCardsContainer.appendChild(card);
                             });
                         }
-
-                        function redirectToGroupPage(groupId) {
-                            // Rediriger vers la page group.html avec l'ID du groupe en tant que paramètre
-                            window.location.href = `/getUsers/${groupId}`;
-                        }
-
-
                     </script>
                 </div>
             </div>
         </div>
+    
+
     </main>
 
     <footer>

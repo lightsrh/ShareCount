@@ -17,17 +17,25 @@ function getGroups(request, response) {
     });
 }
 
-function getAll(request, response) {
-    pool.query('SELECT * FROM utilisateurs;', (error, results) => {
-        if (error) {
-            throw error;
+function getUsers(request, response) {
+    const groupId = request.params.groupId;
+
+    pool.query(
+        'SELECT users.* FROM usergroup INNER JOIN users ON usergroup.utilisateur_id = users.id WHERE usergroup.groupe_id = $1;',
+        [groupId],
+        (error, results) => {
+            if (error) {
+                response.status(500).json({ error });
+            }
+            response.status(200).json(results.rows);
         }
-        response.status(200).json(results.rows);
-    });
+    );
 }
 
+
+
 function addMember(request, response){
-    pool.query('INSERT INTO utilisateurs (nom, prenom) VALUES ($1, $2)', [request.body.nom, request.body.prenom], (error, results) => {
+    pool.query('INSERT INTO users (nom, prenom) VALUES ($1, $2)', [request.body.nom, request.body.prenom], (error, results) => {
         if (error) {
             throw error;
         }
@@ -63,7 +71,7 @@ function deleteById(request, response) {
 }
 
 module.exports = {
-    getAll,
+    getUsers,
     create,
     deleteById,
     addMember,
