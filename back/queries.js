@@ -1,4 +1,6 @@
 const { Pool } = require('pg');
+const path = require('path');
+
 
 const pool = new Pool({
     user: 'postgres',
@@ -21,13 +23,14 @@ function getUsers(request, response) {
     const groupId = request.params.groupId;
 
     pool.query(
-        'SELECT utilisateurs.* FROM utilisateur-groupe INNER JOIN utilisateurs ON utilisateur-group.utilisateur_id = utilisateurs.id WHERE utilisateur-groupe.groupe_id = $1;',
+        'SELECT utilisateurs.* FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
         [groupId],
         (error, results) => {
             if (error) {
                 response.status(500).json({ error });
+            } else {
+                response.status(200).json(results.rows);
             }
-            response.status(200).json(results.rows);
         }
     );
 }

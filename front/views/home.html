@@ -64,8 +64,8 @@
                                 const card = document.createElement('div');
                                 card.className = 'flex-item';
                                 card.innerHTML = `
-                                    <div class="card" onclick="redirectToGroupPage('${item.id}')">
-                                        <img src="${item.image_path}" class="card-img-top" alt="Image du groupe">
+                                    <div class="card" onclick="redirectToUserPage('${item.id}')">
+                                        <img src="${item.image}" class="card-img-top" alt="Image du groupe">
                                         <div class="card-body">
                                             <h5 class="card-title">${item.nom}</h5>
                                             <a href="ajout.html" class="btn" id="ajout">Ajout dépense</a>
@@ -76,11 +76,10 @@
                             });
                         }
 
-                        function redirectToGroupPage(groupId) {
-                            // Rediriger vers la page group.html avec l'ID du groupe en tant que paramètre
-                            window.location.href = `/getUsers/${groupId}`;
+                        function redirectToUserPage(groupId) {
+                            window.location.href = `/front/views/group.html?id=${groupId}`;
+                            
                         }
-
 
                     </script>
                 </div>
