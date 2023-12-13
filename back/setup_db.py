@@ -55,15 +55,18 @@ def create_tables():
 
     cursor.execute('''
     INSERT INTO groupe (nom, photo) VALUES
-    ('Groupe A', '/home/sarah/Documents/Web/ShareCount/front/public/img/cucurucho.jpg'),
-    ('Groupe B', 'photo_groupe_b.jpg'),
-    ('Groupe C', 'photo_groupe_c.jpg');''')
+    ('QSMP', 'cucurucho.jpg'),
+    ('Pomme', 'pomme.jpg'),
+    ('Sunny', 'sunny.jpg'),
+    ('Empanada', 'empanada.jpg'),
+    ('Richarlyson', 'richarlyson.jpg'),
+    ('Dapper', 'dapper.jpg');''')
 
     cursor.execute('''
     INSERT INTO utilisateurs (nom, prenom, photo) VALUES
-    ('Doe', 'John', 'john_doe.jpg'),
-    ('Smith', 'Alice', 'alice_smith.jpg'),
-    ('Johnson', 'Bob', 'bob_johnson.jpg');''')
+    ('Baghera', 'Jones', 'baghera.jpg'),
+    ('BadBoyHalo', '', 'bbh.jpg'),
+    ('Bagi', '', 'bagi.jpg');''')
 
     cursor.execute('''
     INSERT INTO utilisateur_group (id_utilisateur, id_groupe) VALUES
