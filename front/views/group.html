@@ -29,6 +29,7 @@
         </div>
         <div class="column-2">
             <a href="addmember.html" id="addMemberLink">Add Member</a>
+
         </div>
     </header>
 
@@ -63,16 +64,16 @@
                             const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
 
                             dynamicCardsContainer.innerHTML = '';
+                            dynamicCardsContainer.className = 'flex-container';
 
                             data.forEach(item => {
                                 const card = document.createElement('div');
                                 card.className = 'flex-item';
                                 card.innerHTML = `
-                                    <div class="card">
-                                        <img src="${item.image}" class="card-img-top" alt="Image de l'utilisateur">
+                                    <div class="card custom-card">
+                                        <img src="/img/${item.photo}" class="card-img-top" alt="Image de l'utilisateur">
                                         <div class="card-body">
                                             <h5 class="card-title">${item.nom} ${item.prenom}</h5>
-                                            <!-- Ajoutez ici d'autres informations de l'utilisateur -->
                                         </div>
                                     </div>
                                 `;
@@ -87,7 +88,7 @@
 
     </main>
 
-    <footer>
+    <footer id="footer">
         <p>&copy; 2024 ShareCount. All rights reserved.</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

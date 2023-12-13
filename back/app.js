@@ -7,7 +7,9 @@ const app = express();
 
 app.use(express.json());
 
+
 app.use(express.static(path.join(__dirname, '../front/public')));
+app.use('/public', express.static(path.join(__dirname, '../front/public')));
 app.use('/css', express.static(path.join(__dirname, '../front/public/css')));
 app.use('/js', express.static(path.join(__dirname, '../front/public/js')));
 app.use('/img', express.static(path.join(__dirname, '../front/public/img')));
