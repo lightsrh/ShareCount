@@ -47,6 +47,16 @@ function addMember(request, response){
     );
 }
 
+function addGroup(request, response){
+    pool.query('INSERT INTO groupe (nom, photo) VALUES ($1, $2)', [request.body.nom, request.body.photo], (error, results) => {
+        if (error) {
+            throw error;
+        }
+        response.status(200).json(results.rows);
+    }
+    );
+}
+
 function create(request, response) {
     const { id, nom, prenom, depense } = request.body;
 
@@ -78,5 +88,6 @@ module.exports = {
     create,
     deleteById,
     addMember,
-    getGroups
+    getGroups,
+    addGroup
 };
