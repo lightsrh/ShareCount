@@ -11,6 +11,7 @@ form {
 .input-field {
     position: relative;
     margin-top: 2rem;
+    text-align: center;
 }
 
 .input-field input {
@@ -22,9 +23,14 @@ form .input-field:first-child {
 }
 
 form input[type="submit"] {
-    background: linear-gradient(to left, #4776E6, #8e54e9);
+    background: linear-gradient(to left, #47e64f, #8e54e9);
     color: white;
     border-radius: 4px;
     margin-top: 2rem;
     padding: 0.4rem;
+}
+
+.input-field a {
+    display: inline-block;
+    text-align: center;
 }

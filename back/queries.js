@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 const path = require('path');
+const { response } = require('express');
 
 
 const pool = new Pool({
@@ -9,6 +10,25 @@ const pool = new Pool({
     password: 'postgres',
     port: 5432,
 });
+
+function getLogin(username, response) {
+    pool.query('SELECT login, password FROM utilisateurs WHERE login = $1 LIMIT 1', [username], (error, results) => {
+      if (error) {
+        console.error('Erreur lors de la requête SQL :', error);
+        response.sendStatus(500);
+      } else {
+        if (results.rows.length === 0) {
+          // Aucun utilisateur trouvé avec ce nom d'utilisateur
+          response.sendStatus(401);
+        } else {
+          // Utilisateur trouvé, retournez les informations
+          console.log(results.rows);
+          response.status(200).json(results.rows);
+        }
+      }
+    });
+  }
+  
 
 function getGroups(request, response) {
     pool.query('SELECT * FROM groupe;', (error, results) => {
@@ -57,17 +77,20 @@ function addGroup(request, response){
     );
 }
 
-function create(request, response) {
-    const { id, nom, prenom, depense } = request.body;
+function createUser(request, response, nom, prenom, photo, username, password) {
+    console.log(request.body);
 
     pool.query(
-        'INSERT INTO table_test (id, nom, prenom, depense) VALUES ($1, $2, $3, $4)',
-        [id, nom, prenom, depense],
+        'INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES ($1, $2, $3, $4, $5)',
+        [nom, prenom, photo, username, password],
         (error, results) => {
             if (error) {
-                throw error;
+                console.error('Erreur lors de la requête SQL :', error);
+                return response.status(500).json({ success: false, message: 'Erreur lors de la création du compte.' });
             }
-            response.status(201).send(`User added with ID: ${results.rows[0].id}`);
+
+            // Succès de la création du compte
+            response.status(201).json({ success: true, message: 'Compte créé avec succès.' });
         }
     );
 }
@@ -85,9 +108,10 @@ function deleteById(request, response) {
 
 module.exports = {
     getUsers,
-    create,
+    createUser,
     deleteById,
     addMember,
     getGroups,
-    addGroup
+    addGroup,
+    getLogin
 };

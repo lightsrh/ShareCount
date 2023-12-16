@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous">
+
+    <title>ShareCount - Création d'utilisateur</title>
+</head>
+
+<body>
+    <header>
+        <div class="column-6">
+            <div class="row-4">
+                <h1>ShareCount</h1>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2"> <!-- Ajusté la classe de la colonne -->
+                    <form action="/create-user" method="post" id="createUserForm" class="mt-4"> <!-- Ajusté la classe de la marge supérieure -->
+                        <h2 class="mb-3">Création d'utilisateur</h2> <!-- Ajusté la classe de la marge inférieure -->
+                
+                        <div class="mb-3">
+                            <label for="NOM" class="form-label">Nom</label>
+                            <input type="text" name="nom" id="NOM" class="form-control" placeholder="Nom" required>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label for="PRENOM" class="form-label">Prénom</label>
+                            <input type="text" name="prenom" id="PRENOM" class="form-control" placeholder="Prénom" required>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label for="PHOTO" class="form-label">Photo</label>
+                            <input type="text" name="photo" id="PHOTO" class="form-control" placeholder="Photo" required>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label for="USERNAME" class="form-label">Nom d'utilisateur</label>
+                            <input type="text" name="username" id="USERNAME" class="form-control" placeholder="Nom d'utilisateur" required>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label for="PASSWORD" class="form-label">Mot de passe</label>
+                            <input type="password" name="password" id="PASSWORD" class="form-control" placeholder="Mot de passe" required>
+                        </div>
+                
+                        <button type="submit" class="btn btn-primary">Créer un utilisateur</button>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer" class="mt-5">
+        <p>&copy; 2024 ShareCount. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+        <!-- Ajoutez ce script dans la section head ou juste avant la fermeture du body -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const createUserForm = document.getElementById('createUserForm');
+    
+                createUserForm.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+    
+                    try {
+                        const response = await fetch('/create-user', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                nom: document.getElementById('NOM').value,
+                                prenom: document.getElementById('PRENOM').value,
+                                photo: document.getElementById('PHOTO').value,
+                                username: document.getElementById('USERNAME').value,
+                                password: document.getElementById('PASSWORD').value,
+                            }),
+                        });
+    
+                        const data = await response.json();
+    
+                        if (data.success) {
+                            // Compte créé avec succès
+                            alert('Compte créé avec succès. Redirection vers la page d\'accueil.');
+                            window.location.href = '/'; // Redirection vers la page d'accueil
+                        } else {
+                            // Erreur lors de la création du compte
+                            alert('Erreur lors de la création du compte.');
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de la requête :', error);
+                    }
+                });
+            });
+        </script>
+
+</body>
+
+</html>

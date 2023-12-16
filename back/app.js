@@ -3,13 +3,22 @@ const multer = require("multer");
 const path = require("path");
 const sessions = require('express-session');
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
+const { Pool } = require('pg');
+
 require('dotenv').config();
 
 
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'sharecount', // Nom de la base de données que vous avez créée
+    password: 'postgres',
+    port: 5432,
+});
 
-const { getUsers, addMember, getGroups, addGroup } = require("./queries");
+const { getUsers, addMember, getGroups, addGroup, createUser } = require("./queries");
 const port = 8080;
-
 const app = express();
 
 const oneDay = 1000 * 60 * 60 * 24;     //milliseconds in a day
@@ -29,7 +38,13 @@ const checkSession = (req, res, next) => {
     }
   };
 
-  app.use(['/home.html', '/addmember.html', '/front/views/group.html', '/addgroup.html'], checkSession);
+app.use(['/home.html', '/addmember.html', '/front/views/group.html', '/addgroup.html'], checkSession);
+
+const hashPassword = async (password) => {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+};
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -65,16 +80,38 @@ app.get("/", (req, res) => {
 const NAME = process.env.NAME;
 const PASSWORD = process.env.PASSWORD;
 
-app.post('/login',(req,res) => {
-        if (req.body.username == NAME && req.body.password == PASSWORD) {
-        session=req.session;
-        session.userid=req.body.username;
-        res.sendFile(path.join(__dirname, "../front/views/home.html"));
+app.post('/login', (req, res) => {
+    try {
+      pool.query('SELECT login, password FROM utilisateurs WHERE login = $1 LIMIT 1', [req.body.username], (error, results) => {
+        if (error) {
+          console.error('Erreur lors de la requête SQL :', error);
+          return res.sendStatus(500);
+        }
+  
+        if (results.rows.length === 0) {
+          // Aucun utilisateur trouvé avec ce nom d'utilisateur
+          return res.sendStatus(401);
+        }
+  
+        const user = results.rows[0];
+  
+        if (user && bcrypt.compare(req.body.password, user.password)) {
+          // Créer une session pour l'utilisateur
+          req.session.userid = user.login;
+  
+          // Rediriger vers la page d'accueil
+          return res.sendFile(path.join(__dirname, "../front/views/home.html"));
+        } else {
+          return res.send('Identifiant ou mot de passe incorrect');
+        }
+      });
+    } catch (error) {
+      console.error('Erreur lors de la connexion :', error);
+      return res.sendStatus(500);
     }
-    else{
-        res.send('Invalid username or password');
-    }
-});
+  });
+  
+  
 
 app.get("/home.html", (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/home.html"));
@@ -92,6 +129,10 @@ app.get('/addgroup.html', (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/addgroup.html"));
 });
 
+app.get('/create-user', (req, res) => {
+  res.sendFile(path.join(__dirname, "../front/views/createuser.html"));
+});
+
 
 app.get('/logout',(req,res) => {
     req.session.destroy();
@@ -101,6 +142,20 @@ app.get('/logout',(req,res) => {
 app.post('/addMember', addMember);
 
 app.post('/addGroup', addGroup);
+
+app.post('/create-user', async (req, res) => {
+  try {
+      const { nom, prenom, photo, username, password } = req.body;
+      const hashedPassword = await hashPassword(req.body.password);
+
+      createUser(req, res, nom, prenom, photo, username, hashedPassword);
+      
+  } catch (error) {
+      console.error('Erreur lors de la connexion :', error);
+      return res.sendStatus(500);
+  }
+});
+
 
 app.get('/getGroups', getGroups);
 
