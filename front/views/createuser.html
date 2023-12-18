@@ -101,8 +101,11 @@
                             alert('Compte créé avec succès. Redirection vers la page d\'accueil.');
                             window.location.href = '/'; // Redirection vers la page d'accueil
                         } else {
-                            // Erreur lors de la création du compte
-                            alert('Erreur lors de la création du compte.');
+                            if(data.error === 'username_already_exists') {
+                                alert('Ce nom d\'utilisateur existe déjà.');
+                            } else {
+                                alert('Erreur lors de la création du compte.');
+                            }
                         }
                     } catch (error) {
                         console.error('Erreur lors de la requête :', error);

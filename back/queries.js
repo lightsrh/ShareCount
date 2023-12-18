@@ -58,11 +58,22 @@ function getUsers(request, response) {
 
 
 function addMember(request, response){
-    pool.query('INSERT INTO users (nom, prenom) VALUES ($1, $2)', [request.body.nom, request.body.prenom], (error, results) => {
+    pool.query('select nom from users where nom = $1', [request.body.nom], (error, results) => {
         if (error) {
             throw error;
         }
-        response.status(200).json(results.rows);
+        if (results.rows.length === 0) {
+            pool.query('INSERT INTO users (nom, prenom) VALUES ($1, $2)', [request.body.nom, request.body.prenom], (error, results) => {
+                if (error) {
+                    throw error;
+                }
+                response.status(200).json(results.rows);
+            }
+            );
+        }
+        else {
+            response.status(200).json(results.rows);
+        }
     }
     );
 }
@@ -78,21 +89,25 @@ function addGroup(request, response){
 }
 
 function createUser(request, response, nom, prenom, photo, username, password) {
-    console.log(request.body);
-
-    pool.query(
-        'INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES ($1, $2, $3, $4, $5)',
-        [nom, prenom, photo, username, password],
-        (error, results) => {
-            if (error) {
-                console.error('Erreur lors de la requête SQL :', error);
-                return response.status(500).json({ success: false, message: 'Erreur lors de la création du compte.' });
-            }
-
-            // Succès de la création du compte
-            response.status(201).json({ success: true, message: 'Compte créé avec succès.' });
+    pool.query('select login from utilisateurs where login = $1', [username], (error, results) => {
+        if (error) {
+            throw error;
         }
+        if (results.rows.length === 0) {
+            pool.query('INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES ($1, $2, $3, $4, $5)', [nom, prenom, photo, username, password], (error, results) => {
+                if (error) {
+                    throw error;
+                }
+                response.status(200).json(results.rows);
+            }
+            );
+        }
+        else {
+            response.status(400).json({ error: 'username_already_exists' });
+                }
+    }
     );
+
 }
 
 function deleteById(request, response) {
