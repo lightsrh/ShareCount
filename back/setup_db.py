@@ -28,7 +28,8 @@ def create_tables():
     CREATE TABLE groupe (
         id serial PRIMARY KEY,
         nom text NOT NULL,
-        photo text
+        photo text,
+        token text NOT NULL
     );
     ''')
 
@@ -66,13 +67,14 @@ def create_tables():
     )'''
 
     cursor.execute('''
-    INSERT INTO groupe (nom, photo) VALUES
-    ('QSMP', 'cucurucho.jpg'),
-    ('Pomme', 'pomme.jpg'),
-    ('Sunny', 'sunny.jpg'),
-    ('Empanada', 'empanada.jpg'),
-    ('Richarlyson', 'richarlyson.jpg'),
-    ('Dapper', 'dapper.jpg');''')
+    INSERT INTO groupe (nom, photo, token) VALUES
+    ('QSMP', 'cucurucho.jpg', 'qsmp'),
+    ('Pomme', 'pomme.jpg', 'pomme'),
+    ('Sunny', 'sunny.jpg', 'sunny'),
+    ('Empanada', 'empanada.jpg', 'empanada'),
+    ('Richarlyson', 'richarlyson.jpg', 'richarlyson'),
+    ('Dapper', 'dapper.jpg', 'dapper');''')
+    
 
     cursor.execute('''
     INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES
@@ -96,10 +98,10 @@ def create_tables():
     cursor.execute('''
     INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, justificatif, informations) VALUES
     (1, 2, 1, 100, '2021-01-01', 'justificatif1.jpg', 'informations1'),
-    (1, 3, 1, 100, '2021-01-01', 'justificatif2.jpg', 'informations2'),
-    (2, 1, 1, 100, '2021-01-01', 'justificatif3.jpg', 'informations3'),
-    (2, 3, 1, 100, '2021-01-01', 'justificatif4.jpg', 'informations4'),
-    (3, 1, 1, 100, '2021-01-01', 'justificatif5.jpg', 'informations5');
+    (1, 3, 1, 600, '2021-01-01', 'justificatif2.jpg', 'informations2'),
+    (2, 1, 1, 160, '2021-01-01', 'justificatif3.jpg', 'informations3'),
+    (2, 3, 1, 10000, '2021-01-01', 'justificatif4.jpg', 'informations4'),
+    (3, 1, 1, 90, '2021-01-01', 'justificatif5.jpg', 'informations5');
     ''')
 
     conn.commit()

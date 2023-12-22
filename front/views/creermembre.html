@@ -30,19 +30,20 @@
                     <form action="/create-user" method="post" id="createUserForm" class="mt-4"> <!-- Ajusté la classe de la marge supérieure -->
                         <h2 class="mb-3">Création d'utilisateur</h2> <!-- Ajusté la classe de la marge inférieure -->
                 
-                        <div class="mb-3">
-                            <label for="NOM" class="form-label">Nom</label>
-                            <input type="text" name="nom" id="NOM" class="form-control" placeholder="Nom" required>
+                        <div class="row mb-3"> <!-- Ajout de la classe row ici -->
+                            <div class="col-md-6"> <!-- Diviser la ligne en deux colonnes pour les champs Nom et Prénom -->
+                                <label for="NOM" class="form-label">Nom</label>
+                                <input type="text" name="nom" id="NOM" class="form-control" placeholder="Nom" required>
+                            </div>
+                            <div class="col-md-6"> <!-- Deuxième colonne pour le champ Prénom -->
+                                <label for="PRENOM" class="form-label">Prénom</label>
+                                <input type="text" name="prenom" id="PRENOM" class="form-control" placeholder="Prénom" required>
+                            </div>
                         </div>
                 
                         <div class="mb-3">
-                            <label for="PRENOM" class="form-label">Prénom</label>
-                            <input type="text" name="prenom" id="PRENOM" class="form-control" placeholder="Prénom" required>
-                        </div>
-                
-                        <div class="mb-3">
-                            <label for="PHOTO" class="form-label">Photo</label>
-                            <input type="text" name="photo" id="PHOTO" class="form-control" placeholder="Photo" required>
+                            <label for="InputPhoto">Photo</label>
+                            <input type="file" class="form-control" id="InputPhoto" placeholder="Photo" name="image" accept="image/*">
                         </div>
                 
                         <div class="mb-3">
@@ -58,9 +59,9 @@
                         <button type="submit" class="btn btn-primary">Créer un utilisateur</button>
                     </form>
                 </div>
-                
             </div>
         </div>
+        
     </main>
 
     <footer id="footer" class="mt-5">
@@ -71,7 +72,6 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
-        <!-- Ajoutez ce script dans la section head ou juste avant la fermeture du body -->
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const createUserForm = document.getElementById('createUserForm');
@@ -80,6 +80,7 @@
                     event.preventDefault();
     
                     try {
+                        console.log('Création d\'un utilisateur...');
                         const response = await fetch('/create-user', {
                             method: 'POST',
                             headers: {
@@ -95,11 +96,10 @@
                         });
     
                         const data = await response.json();
-    
+                        console.log('Réponse reçue :', data);
                         if (data.success) {
-                            // Compte créé avec succès
                             alert('Compte créé avec succès. Redirection vers la page d\'accueil.');
-                            window.location.href = '/'; // Redirection vers la page d'accueil
+                            window.location.href = '/'; 
                         } else {
                             if(data.error === 'username_already_exists') {
                                 alert('Ce nom d\'utilisateur existe déjà.');

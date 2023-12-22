@@ -4,6 +4,7 @@ const path = require("path");
 const sessions = require('express-session');
 const cookieParser = require("cookie-parser");
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 const { Pool } = require('pg');
 
 require('dotenv').config();
@@ -17,9 +18,12 @@ const pool = new Pool({
     port: 5432,
 });
 
-const { getUsers, addMember, getGroups, addGroup, createUser } = require("./queries");
+const { getUsers, addMember, getGroups, addGroup, createUser, blobImage } = require("./queries");
 const port = 8080;
 const app = express();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const oneDay = 1000 * 60 * 60 * 24;     //milliseconds in a day
 app.use(sessions({
@@ -45,6 +49,10 @@ const hashPassword = async (password) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
 };
+
+function generateUniqueToken() {
+  return uuidv4();
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -76,9 +84,6 @@ app.get("/", (req, res) => {
     }else
     res.sendFile(path.join(__dirname, "../front/views/login.html"));
 });
-
-const NAME = process.env.NAME;
-const PASSWORD = process.env.PASSWORD;
 
 app.post('/login', (req, res) => {
     try {
@@ -117,20 +122,20 @@ app.get("/home.html", (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/home.html"));
 });
 
-app.get("/addmember.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/addmember.html"));
+app.get("/ajoutmembre.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "../front/views/ajoutmembre.html"));
 });
 
 app.get('/front/views/group.html', (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/group.html"));
 });
 
-app.get('/addgroup.html', (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/addgroup.html"));
+app.get('/creergroupe.html', (req, res) => {
+    res.sendFile(path.join(__dirname, "../front/views/creergroupe.html"));
 });
 
 app.get('/create-user', (req, res) => {
-  res.sendFile(path.join(__dirname, "../front/views/createuser.html"));
+  res.sendFile(path.join(__dirname, "../front/views/creermembre.html"));
 });
 
 
@@ -141,14 +146,20 @@ app.get('/logout',(req,res) => {
 
 app.post('/addMember', addMember);
 
-app.post('/addGroup', addGroup);
-
 app.post('/create-user', async (req, res) => {
   try {
+      console.log("create user");
       const { nom, prenom, photo, username, password } = req.body;
-      const hashedPassword = await hashPassword(req.body.password);
+      const hashedPassword = await hashPassword(password);
+      console.log("password hashed");
+      //encode photo
+      const base64 = photo.toString('base64');
+      const mimeType = photo.mimetype;
+      const photoEncoded = `data:${mimeType};base64,${base64}`;
+      console.log("photo encoded");
 
-      createUser(req, res, nom, prenom, photo, username, hashedPassword);
+      createUser(req, res, nom, prenom, photoEncoded, username, hashedPassword);
+      console.log("user created");
       
   } catch (error) {
       console.error('Erreur lors de la connexion :', error);
@@ -156,7 +167,22 @@ app.post('/create-user', async (req, res) => {
   }
 });
 
+app.post('/createGroup', async (req, res) => {
+  const { nom, photo } = req.body;
+  const token = generateUniqueToken(); 
+
+  try {
+    const result = await pool.query('INSERT INTO groupe (nom, photo, token) VALUES ($1, $2, $3) RETURNING *', [nom, photo, token]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erreur lors de la création du groupe' });
+  }
+});
+
 
 app.get('/getGroups', getGroups);
 
 app.get('/getUsers/:groupId', getUsers);
+
+app.post('/blobImage', blobImage);

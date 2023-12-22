@@ -30,14 +30,23 @@ function getLogin(username, response) {
   }
   
 
-function getGroups(request, response) {
-    pool.query('SELECT * FROM groupe;', (error, results) => {
+  function getGroups(request, response) {
+    login = request.session.userid;
+    pool.query('select id from utilisateurs where login = $1;', [login], (error, results) => {
         if (error) {
             throw error;
         }
-        response.status(200).json(results.rows);
+        userId = results.rows[0].id;
+        pool.query('SELECT g.* FROM groupe g INNER JOIN utilisateur_group ug ON g.id = ug.id_groupe WHERE ug.id_utilisateur = $1;', [userId], (error, results) => {
+            if (error) {
+                throw error;
+            }
+            response.status(200).json(results.rows);
+        });
     });
+    
 }
+
 
 function getUsers(request, response) {
     const groupId = request.params.groupId;
@@ -78,15 +87,7 @@ function addMember(request, response){
     );
 }
 
-function addGroup(request, response){
-    pool.query('INSERT INTO groupe (nom, photo) VALUES ($1, $2)', [request.body.nom, request.body.photo], (error, results) => {
-        if (error) {
-            throw error;
-        }
-        response.status(200).json(results.rows);
-    }
-    );
-}
+
 
 function createUser(request, response, nom, prenom, photo, username, password) {
     pool.query('select login from utilisateurs where login = $1', [username], (error, results) => {
@@ -121,12 +122,22 @@ function deleteById(request, response) {
     });
 }
 
+function blobImage(request, response) {
+    console.log(request.body);
+    const { image } = request.body.photo;
+    const base64 = image.toString('base64');
+    const mimeType = image.mimetype;
+    const imageEncoded = `data:${mimeType};base64,${base64}`;
+
+    response.status(200).json({ imageEncoded });
+}
+
 module.exports = {
     getUsers,
     createUser,
     deleteById,
     addMember,
     getGroups,
-    addGroup,
-    getLogin
+    getLogin,
+    blobImage
 };

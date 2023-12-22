@@ -52,10 +52,24 @@
                 var photo = document.getElementById("InputPhoto").value;
                 var groupe = {
                     "nom": nom,
-                    "photo": photo,
+                    "photo": image,
                 };
+                fetch('/blobImage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(groupe)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    groupe.photo = data;
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
 
-                fetch('/addGroup', {
+                fetch('/createGroup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
