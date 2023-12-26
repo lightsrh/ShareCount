@@ -34,14 +34,6 @@
                 <input type="text" class="form-control" id="InputNom" aria-describedby="nomHelp" placeholder="Entrez le nom">
                 <small id="nomHelp" class="form-text text-muted">peut-être</small>
             </div>
-            <div class="form-group">
-                <label for="InputPhoto">Photo</label>
-                <input type="text" class="form-control" id="InputPhoto" placeholder="Photo">
-            </div>
-            <div class="form-group">
-                <label for="InputPhoto">Photo</label>
-                <input type="file" class="form-control" id="InputPhoto" placeholder="Photo" name="image" accept="image/*">
-            </div>
             <button type="button" class="btn btn-primary" onclick="ajouterGroupe()">Submit</button>
         </form>
         
@@ -49,25 +41,10 @@
         <script>
             function ajouterGroupe() {
                 var nom = document.getElementById("InputNom").value;
-                var photo = document.getElementById("InputPhoto").value;
                 var groupe = {
                     "nom": nom,
-                    "photo": image,
+                    "photo": null,
                 };
-                fetch('/blobImage', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(groupe)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    groupe.photo = data;
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
 
                 fetch('/createGroup', {
                     method: 'POST',
@@ -79,7 +56,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
-                    window.location.href = "home.html";
+                    window.location.href = "/";
                 })
                 .catch((error) => {
                     console.error('Error:', error);

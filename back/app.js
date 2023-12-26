@@ -18,7 +18,7 @@ const pool = new Pool({
     port: 5432,
 });
 
-const { getUsers, addMember, getGroups, addGroup, createUser, blobImage } = require("./queries");
+const { getUsers, addMember, getGroups, createUser, addToGoup } = require("./queries");
 const port = 8080;
 const app = express();
 
@@ -139,6 +139,7 @@ app.get('/create-user', (req, res) => {
 });
 
 
+
 app.get('/logout',(req,res) => {
     req.session.destroy();
     res.redirect('/');
@@ -173,7 +174,12 @@ app.post('/createGroup', async (req, res) => {
 
   try {
     const result = await pool.query('INSERT INTO groupe (nom, photo, token) VALUES ($1, $2, $3) RETURNING *', [nom, photo, token]);
-    res.status(200).json(result.rows[0]);
+    const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userid]);
+    const id_utilisateur = result2.rows[0].id;
+    console.log(id_utilisateur);
+    const id_groupe = result.rows[0].id;
+    console.log(id_groupe);
+    await addToGoup(res, id_utilisateur, id_groupe);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur lors de la création du groupe' });
@@ -185,4 +191,3 @@ app.get('/getGroups', getGroups);
 
 app.get('/getUsers/:groupId', getUsers);
 
-app.post('/blobImage', blobImage);

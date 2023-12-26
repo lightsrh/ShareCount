@@ -111,6 +111,19 @@ function createUser(request, response, nom, prenom, photo, username, password) {
 
 }
 
+
+function addToGoup (response, idUser, idGroup) {
+    console.log(idUser);
+    console.log(idGroup);
+    pool.query('INSERT INTO utilisateur_group (id_utilisateur, id_groupe) VALUES ($1, $2) RETURNING *', [idUser, idGroup], (error, results) => {
+        if (error) {
+            throw error;
+        }
+        response.status(200).json(results.rows);
+    }
+    );
+}
+
 function deleteById(request, response) {
     const id = parseInt(request.params.id);
 
@@ -122,16 +135,6 @@ function deleteById(request, response) {
     });
 }
 
-function blobImage(request, response) {
-    console.log(request.body);
-    const { image } = request.body.photo;
-    const base64 = image.toString('base64');
-    const mimeType = image.mimetype;
-    const imageEncoded = `data:${mimeType};base64,${base64}`;
-
-    response.status(200).json({ imageEncoded });
-}
-
 module.exports = {
     getUsers,
     createUser,
@@ -139,5 +142,5 @@ module.exports = {
     addMember,
     getGroups,
     getLogin,
-    blobImage
+    addToGoup
 };
