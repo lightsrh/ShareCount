@@ -64,6 +64,23 @@ function getUsers(request, response) {
     );
 }
 
+function getToken (request, response) {
+    console.log(request.params.groupId);
+    const groupId = request.params.groupId;
+    pool.query(
+        'SELECT token FROM groupe WHERE id = $1;',
+        [groupId],
+        (error, results) => {
+            if (error) {
+                response.status(500).json({ error });
+            } else {
+                console.log(results.rows);
+                response.status(200).json(results.rows);
+            }
+        }
+    );
+}
+
 
 
 function addMember(request, response){
@@ -112,17 +129,28 @@ function createUser(request, response, nom, prenom, photo, username, password) {
 }
 
 
-function addToGoup (response, idUser, idGroup) {
+function addToGroup(response, idUser, idGroup) {
     console.log(idUser);
     console.log(idGroup);
-    pool.query('INSERT INTO utilisateur_group (id_utilisateur, id_groupe) VALUES ($1, $2) RETURNING *', [idUser, idGroup], (error, results) => {
-        if (error) {
-            throw error;
+
+    pool.query('SELECT * FROM utilisateur_group WHERE id_utilisateur = $1 AND id_groupe = $2', [idUser, idGroup], (selectError, selectResults) => {
+        if (selectError) {
+            throw selectError;
         }
-        response.status(200).json(results.rows);
-    }
-    );
+
+        if (selectResults.rows.length === 0) {
+            pool.query('INSERT INTO utilisateur_group (id_utilisateur, id_groupe) VALUES ($1, $2) RETURNING *', [idUser, idGroup], (insertError, insertResults) => {
+                if (insertError) {
+                    throw insertError;
+                }
+                response.status(200).json(insertResults.rows);
+            });
+        } else {
+            response.status(400).json({ error: 'La relation entre l\'utilisateur et le groupe existe déjà.' });
+        }
+    });
 }
+
 
 function deleteById(request, response) {
     const id = parseInt(request.params.id);
@@ -142,5 +170,6 @@ module.exports = {
     addMember,
     getGroups,
     getLogin,
-    addToGoup
+    addToGroup,
+    getToken
 };

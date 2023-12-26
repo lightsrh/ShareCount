@@ -18,7 +18,7 @@ const pool = new Pool({
     port: 5432,
 });
 
-const { getUsers, addMember, getGroups, createUser, addToGoup } = require("./queries");
+const { getUsers, addMember, getGroups, createUser, addToGroup, getToken } = require("./queries");
 const port = 8080;
 const app = express();
 
@@ -42,7 +42,7 @@ const checkSession = (req, res, next) => {
     }
   };
 
-app.use(['/home.html', '/addmember.html', '/front/views/group.html', '/addgroup.html'], checkSession);
+app.use(['/home.html', '/group.html', '/addgroup.html, /ajoutmembre.html', 'creergroupe.html', 'creermembre.html', 'rejoindregroupe.html'], checkSession);
 
 const hashPassword = async (password) => {
     const saltRounds = 10;
@@ -134,6 +134,10 @@ app.get('/creergroupe.html', (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/creergroupe.html"));
 });
 
+app.get('/rejoindregroupe.html', (req, res) => {
+    res.sendFile(path.join(__dirname, "../front/views/rejoindregroupe.html"));
+});
+
 app.get('/create-user', (req, res) => {
   res.sendFile(path.join(__dirname, "../front/views/creermembre.html"));
 });
@@ -186,8 +190,22 @@ app.post('/createGroup', async (req, res) => {
   }
 });
 
+app.post('/joinGroup', async (req, res) => {
+  const { token } = req.body;
+  try {
+    const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userid]);
+    const id_utilisateur = result.rows[0].id;
+    const result2 = await pool.query('SELECT id FROM groupe WHERE token = $1', [token]);
+    const id_groupe = result2.rows[0].id;
+    await addToGroup(res, id_utilisateur, id_groupe);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erreur lors de l\'ajout au groupe' });
+  }
+});
+
 
 app.get('/getGroups', getGroups);
 
 app.get('/getUsers/:groupId', getUsers);
-
+app.get('/getToken/:groupId', getToken);
