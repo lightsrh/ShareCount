@@ -41,10 +41,10 @@
                             </div>
                         </div>
                 
-                        <div class="mb-3">
+                       <!-- <div class="mb-3">
                             <label for="InputPhoto">Photo</label>
                             <input type="file" class="form-control" id="InputPhoto" placeholder="Photo" name="image" accept="image/*">
-                        </div>
+                        </div>-->
                 
                         <div class="mb-3">
                             <label for="USERNAME" class="form-label">Nom d'utilisateur</label>
@@ -65,7 +65,7 @@
     </main>
 
     <footer id="footer" class="mt-5">
-        <p>&copy; 2024 ShareCount. All rights reserved.</p>
+        <p>&copy; 2024 ShareCount. Tous droits reservés.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -89,15 +89,15 @@
                             body: JSON.stringify({
                                 nom: document.getElementById('NOM').value,
                                 prenom: document.getElementById('PRENOM').value,
-                                photo: document.getElementById('PHOTO').value,
+                                //photo: document.getElementById('PHOTO').value,
+                                photo: 'user.png',
                                 username: document.getElementById('USERNAME').value,
                                 password: document.getElementById('PASSWORD').value,
                             }),
                         });
     
                         const data = await response.json();
-                        console.log('Réponse reçue :', data);
-                        if (data.success) {
+                        if (data == document.getElementById('USERNAME').value) {
                             alert('Compte créé avec succès. Redirection vers la page d\'accueil.');
                             window.location.href = '/'; 
                         } else {

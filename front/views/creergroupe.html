@@ -10,7 +10,7 @@
         crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles_home.css">
+    <link rel="stylesheet" href="css/form.css">
 </head>
 
 <body>
@@ -20,33 +20,48 @@
                 <h1>ShareCount</h1>
             </div>
         </div>
-        <div class="column-2">
-            <a href="home.html" id="homeLink">Home</a>
-        </div>
     </header>
 
     <main>
        
-        <!--Page of creation for a new member, asking for name, firstname and first exepenses-->
-        <form id="groupeForm">
-            <div class="form-group">
-                <label for="InputNom">Nom du groupe</label>
-                <input type="text" class="form-control" id="InputNom" aria-describedby="nomHelp" placeholder="Entrez le nom">
-                <small id="nomHelp" class="form-text text-muted">peut-être</small>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="ajouterGroupe()">Submit</button>
-        </form>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <form method="post" id="groupeForm" class="mt-4" action="/create-group">
+                        <h2 class="mb-3">Création de groupe</h2>
         
-
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="InputNom" class="form-label">Nom du groupe</label>
+                                <input type="text" class="form-control" id="InputNom" aria-describedby="nomHelp" placeholder="Entrez le nom" required>
+                            </div>
+                        </div>
+        
+                        <button type="submit" class="btn btn-primary">Créer un groupe</button>
+                    </form>
+                </div>
+            </div>
+        </div>    
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const groupeForm = document.getElementById('groupeForm');
+
+                groupeForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    // Call your function or handle the group creation here
+                    ajouterGroupe();
+                });
+            });
+
             function ajouterGroupe() {
                 var nom = document.getElementById("InputNom").value;
                 var groupe = {
                     "nom": nom,
-                    "photo": null,
+                    "photo": 'user.png',
                 };
 
-                fetch('/createGroup', {
+                fetch('/create-group', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

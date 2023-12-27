@@ -42,7 +42,7 @@ const checkSession = (req, res, next) => {
     }
   };
 
-app.use(['/home.html', '/group.html', '/addgroup.html, /ajoutmembre.html', 'creergroupe.html', 'creermembre.html', 'rejoindregroupe.html'], checkSession);
+app.use(['/home.html', '/group.html', '/addgroup.html, /ajoutmembre.html', 'creergroupe.html', 'rejoindregroupe.html'], checkSession);
 
 const hashPassword = async (password) => {
     const saltRounds = 10;
@@ -158,21 +158,17 @@ app.post('/create-user', async (req, res) => {
       const hashedPassword = await hashPassword(password);
       console.log("password hashed");
       //encode photo
-      const base64 = photo.toString('base64');
-      const mimeType = photo.mimetype;
-      const photoEncoded = `data:${mimeType};base64,${base64}`;
-      console.log("photo encoded");
-
-      createUser(req, res, nom, prenom, photoEncoded, username, hashedPassword);
-      console.log("user created");
-      
+      createUser(req, res, nom, prenom, photo, username, hashedPassword);
+      console.log("user created");      
   } catch (error) {
       console.error('Erreur lors de la connexion :', error);
       return res.sendStatus(500);
   }
 });
 
-app.post('/createGroup', async (req, res) => {
+app.post('/create-group', async (req, res) => {
+  console.log("create group");
+  console.log(req.body);
   const { nom, photo } = req.body;
   const token = generateUniqueToken(); 
 
@@ -183,7 +179,7 @@ app.post('/createGroup', async (req, res) => {
     console.log(id_utilisateur);
     const id_groupe = result.rows[0].id;
     console.log(id_groupe);
-    await addToGoup(res, id_utilisateur, id_groupe);
+    await addToGroup(res, id_utilisateur, id_groupe);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur lors de la création du groupe' });

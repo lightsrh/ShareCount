@@ -108,15 +108,13 @@ function addMember(request, response){
 
 function createUser(request, response, nom, prenom, photo, username, password) {
     pool.query('select login from utilisateurs where login = $1', [username], (error, results) => {
-        if (error) {
-            throw error;
-        }
+        console.log(results.rows);
         if (results.rows.length === 0) {
-            pool.query('INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES ($1, $2, $3, $4, $5)', [nom, prenom, photo, username, password], (error, results) => {
+            pool.query('INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES ($1, $2, $3, $4, $5) RETURNING *', [nom, prenom, photo, username, password], (error, results) => {
                 if (error) {
                     throw error;
                 }
-                response.status(200).json(results.rows);
+                response.status(200).json(results.rows[0].login);
             }
             );
         }
@@ -171,5 +169,6 @@ module.exports = {
     getGroups,
     getLogin,
     addToGroup,
-    getToken
+    getToken,
+    addToGroup
 };
