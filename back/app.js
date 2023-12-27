@@ -153,13 +153,9 @@ app.post('/addMember', addMember);
 
 app.post('/create-user', async (req, res) => {
   try {
-      console.log("create user");
       const { nom, prenom, photo, username, password } = req.body;
       const hashedPassword = await hashPassword(password);
-      console.log("password hashed");
-      //encode photo
       createUser(req, res, nom, prenom, photo, username, hashedPassword);
-      console.log("user created");      
   } catch (error) {
       console.error('Erreur lors de la connexion :', error);
       return res.sendStatus(500);
@@ -167,8 +163,6 @@ app.post('/create-user', async (req, res) => {
 });
 
 app.post('/create-group', async (req, res) => {
-  console.log("create group");
-  console.log(req.body);
   const { nom, photo } = req.body;
   const token = generateUniqueToken(); 
 
@@ -176,9 +170,7 @@ app.post('/create-group', async (req, res) => {
     const result = await pool.query('INSERT INTO groupe (nom, photo, token) VALUES ($1, $2, $3) RETURNING *', [nom, photo, token]);
     const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userid]);
     const id_utilisateur = result2.rows[0].id;
-    console.log(id_utilisateur);
     const id_groupe = result.rows[0].id;
-    console.log(id_groupe);
     await addToGroup(res, id_utilisateur, id_groupe);
   } catch (error) {
     console.error(error);

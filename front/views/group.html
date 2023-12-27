@@ -114,8 +114,6 @@
                                 .then(data => {
                                     navigator.clipboard.writeText(data[0].token)
                                         .then(() => {
-                                            console.log('Le token a été copié avec succès !');
-                                            console.log(data[0].token);
                                             alert('Le token a été copié avec succès !');
                                         })
                                         .catch(error => {

@@ -22,7 +22,6 @@ function getLogin(username, response) {
           response.sendStatus(401);
         } else {
           // Utilisateur trouvé, retournez les informations
-          console.log(results.rows);
           response.status(200).json(results.rows);
         }
       }
@@ -65,7 +64,6 @@ function getUsers(request, response) {
 }
 
 function getToken (request, response) {
-    console.log(request.params.groupId);
     const groupId = request.params.groupId;
     pool.query(
         'SELECT token FROM groupe WHERE id = $1;',
@@ -74,7 +72,6 @@ function getToken (request, response) {
             if (error) {
                 response.status(500).json({ error });
             } else {
-                console.log(results.rows);
                 response.status(200).json(results.rows);
             }
         }
@@ -108,7 +105,6 @@ function addMember(request, response){
 
 function createUser(request, response, nom, prenom, photo, username, password) {
     pool.query('select login from utilisateurs where login = $1', [username], (error, results) => {
-        console.log(results.rows);
         if (results.rows.length === 0) {
             pool.query('INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES ($1, $2, $3, $4, $5) RETURNING *', [nom, prenom, photo, username, password], (error, results) => {
                 if (error) {
@@ -128,8 +124,6 @@ function createUser(request, response, nom, prenom, photo, username, password) {
 
 
 function addToGroup(response, idUser, idGroup) {
-    console.log(idUser);
-    console.log(idGroup);
 
     pool.query('SELECT * FROM utilisateur_group WHERE id_utilisateur = $1 AND id_groupe = $2', [idUser, idGroup], (selectError, selectResults) => {
         if (selectError) {
