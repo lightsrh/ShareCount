@@ -26,22 +26,20 @@
        
         <div class="container">
             <div class="row">
-                <div class="col-md-8 offset-md-2">
+                <div class="col-md-16 offset-md-2">
                     <form method="post" id="groupeForm" class="mt-4" action="/create-group">
                         <h2 class="mb-3">Création de groupe</h2>
-        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="InputNom" class="form-label">Nom du groupe</label>
-                                <input type="text" class="form-control" id="InputNom" aria-describedby="nomHelp" placeholder="Entrez le nom" required>
-                            </div>
+                        
+                        <div class="mb-3">
+                            <label for="InputNom" class="form-label">Nom du groupe</label>
+                            <input type="text" class="form-control" id="InputNom" aria-describedby="nomHelp" placeholder="Entrez le nom" required>
                         </div>
-        
-                        <button type="submit" class="btn btn-primary">Créer un groupe</button>
+                        <input type="submit" value="Valider">
+
                     </form>
                 </div>
             </div>
-        </div>    
+        </div>     
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const groupeForm = document.getElementById('groupeForm');
