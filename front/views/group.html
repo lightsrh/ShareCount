@@ -38,6 +38,7 @@
             </a> 
             <a href="/" class="btn btn-outline-dark" id="addMemberLink">Revenir aux groupes</a>
             <button class="btn btn-outline-dark" id="joinGroupButton">Copier le token du groupe</button>
+            <a href="/depense.html" class="btn btn-outline-dark" id="depenseLink">Créer une nouvelle dépense</a>
         </div>
     </header>
 
@@ -65,32 +66,44 @@
                                     updateDynamicCards(data);
                                 })
                                 .catch(error => {
-                                    console.error('Erreur lors de la requête GET :', error);
+                                    console.error('Erreur lors de la requête GET Users :', error);
                                 });
                         }
 
                         function updateDynamicCards(data) {
-                            const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
+                            localStorage.setItem('usersData', JSON.stringify(data));
+                            fetch(`/getLogin`)
+                                .then(response => response.json())
+                                .then(datalogin => {
+                                    localStorage.setItem('login', datalogin);
+                                    const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
+                                    dynamicCardsContainer.innerHTML = '';
+                                    dynamicCardsContainer.className = 'flex-container';
 
-                            dynamicCardsContainer.innerHTML = '';
-                            dynamicCardsContainer.className = 'flex-container';
+                                    data.forEach(item => {
+                                        const card = document.createElement('div');
+                                        card.className = 'flex-item';
+                                        if (item.login === datalogin) {
+                                            card.classList.add('golden-border');
+                                        }
 
-                            data.forEach(item => {
-                                const card = document.createElement('div');
-                                card.className = 'flex-item';
-                                card.innerHTML = `
-                                    <div class="card custom-card">
-                                        <img src="/img/${item.photo}" class="card-img-top" alt="Image de l'utilisateur">
-                                        <div class="card-body">
-                                            <h5 class="card-title">${item.nom} ${item.prenom}</h5>
-                                            <a href="ajout.html" class="btn" id="ajout">Ajout dépense</a>
+                                        card.innerHTML = `
+                                            <div class="card custom-card">
+                                                <img src="/img/${item.photo}" class="card-img-top" alt="Image de l'utilisateur">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${item.prenom} ${item.nom} ${(datalogin === item.login) ? '(Vous) ' : ''}</h5>
+                                                </div>
+                                            </div>
+                                        `;
 
-                                        </div>
-                                    </div>
-                                `;
-                                dynamicCardsContainer.appendChild(card);
-                            });
+                                        dynamicCardsContainer.appendChild(card);
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors de la requête GET login :', error);
+                                });
                         }
+
 
                         document.getElementById('joinGroupButton').addEventListener('click', function () {
                             copyToken();

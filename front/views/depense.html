@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/form.css">
+
+    <title>ShareCount</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+
+<body>
+    <header> 
+           
+        
+        <div class="column-6">
+            <div class="row-4">
+                <h1>ShareCount</h1>
+                <a href='/logout' class="btn btn-outline-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"></path>
+                        <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"></path>
+                    </svg>
+                    Deconnexion
+                </a> 
+            </div>
+        </div>
+        
+    </header>
+
+    <main>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="/create-expense" method="post" id="createExpenseForm" class="mt-2">
+                        <h2 class="mb-3">Créer une dépense</h2>
+
+                        <div class="mb-3">
+                            <label for="payer">Payé par</label>
+                            <div class="input-group">
+                                <select name="payer" id="payer" class="form-select" required>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="rembourser"> Pour qui</label>
+                            <div id="rembourser-checkboxes">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date">Date</label>
+                            <input type="date" name="date" id="date" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="montant">Montant (€)</label>
+                            <input type="number" name="montant" id="montant" class="form-control" placeholder="Montant"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="infos">Informations additionnelles</label>
+                            <textarea name="infos" id="infos" class="form-control"
+                                placeholder="Informations additionnelles"></textarea>
+                        </div>
+                        <input type="submit" value="Créer la dépense">
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            window.onload = function () {
+                const storedData = localStorage.getItem('usersData');
+                const storedLogin = localStorage.getItem('login');
+                console.log(storedData);
+                console.log(storedLogin);
+
+                if (storedData && storedLogin) {
+                    const data = JSON.parse(storedData);
+                    const payerSelect = document.getElementById('payer');
+                    const rembourserCheckboxes = document.getElementById('rembourser-checkboxes');
+
+                    function updateCheckboxes() {
+                        const selectedPayer = payerSelect.value;
+
+                        rembourserCheckboxes.innerHTML = '';
+
+                        data.forEach(user => {
+                            if (user.prenom + user.nom !== selectedPayer) {
+                                const checkbox = document.createElement('input');
+                                checkbox.type = 'checkbox';
+                                checkbox.name = 'rembourser[]'; 
+                                checkbox.value = user.prenom + user.nom;
+                                checkbox.id = 'rembourser-' + user.prenom + user.nom;
+                                checkbox.style.width = 'auto';
+
+                                const label = document.createElement('label');
+                                label.htmlFor = 'rembourser-' + user.prenom + user.nom;
+                                label.appendChild(document.createTextNode(user.prenom + user.nom));
+
+                                const div = document.createElement('div');
+                                div.style.display = 'flex'; 
+                                div.style.alignItems = 'center';
+                                div.appendChild(checkbox);
+                                div.appendChild(label);
+
+                                rembourserCheckboxes.appendChild(div);
+                            }
+                        });
+                    }
+
+                    data.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.prenom + user.nom;
+                        option.text = user.prenom + user.nom;
+                        payerSelect.appendChild(option);
+                    });
+
+                    updateCheckboxes();
+
+                    payerSelect.addEventListener('change', updateCheckboxes);
+
+                    localStorage.removeItem('usersData');
+                    localStorage.removeItem('login');
+                } else {
+                    console.warn('Data not found in localStorage. Redirecting ...');
+                    window.location.href = '/group.html';
+                }
+            };
+        </script>
+    </main>
+
+    <footer id="footer">
+        <p>&copy; 2024 ShareCount. Tous droits reservés.</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
+
