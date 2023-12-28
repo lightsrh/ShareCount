@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <title>ShareCount</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+</head>
+
+<body>
+    <header>
+        <div class="column-6">
+            <div class="row-4">
+                <h1>ShareCount</h1>
+            </div>
+        </div>
+        <div class="column-2">
+            <!--<a href="ajoutmembre.html" class="btn btn-outline-dark" id="addMemberLink">Ajouter un membre au groupe</a>-->
+            <a href='/logout' class="btn btn-outline-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"></path>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"></path>
+                </svg>
+                Déconnexion
+            </a> 
+            <a href="/" class="btn btn-outline-dark" id="addMemberLink">Revenir aux groupes</a>
+            <button class="btn btn-outline-dark" id="joinGroupButton">Copier le token du groupe</button>
+            <a href="/depense.html" class="btn btn-outline-dark" id="depenseLink">Créer une nouvelle dépense</a>
+        </div>
+    </header>
+
+
+    <main>
+        <div id="dynamicCardsContainer" class="container">
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <script>
+                        window.onload = function () {
+                            getUsers();
+                        };
+
+                        function getUsers() {
+                            // Récupérer l'ID du groupe depuis l'URL
+                            const groupId = new URLSearchParams(window.location.search).get('id');
+
+                            // Faire une requête pour récupérer les utilisateurs du groupe
+                            fetch(`/getUsers/${groupId}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    updateDynamicCards(data);
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors de la requête GET Users :', error);
+                                });
+                        }
+
+                        function updateDynamicCards(data) {
+                            localStorage.setItem('usersData', JSON.stringify(data));
+                            fetch(`/getLogin`)
+                                .then(response => response.json())
+                                .then(datalogin => {
+                                    localStorage.setItem('login', datalogin);
+                                    const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
+                                    dynamicCardsContainer.innerHTML = '';
+                                    dynamicCardsContainer.className = 'flex-container';
+
+                                    data.forEach(item => {
+                                        const card = document.createElement('div');
+                                        card.className = 'flex-item';
+                                        if (item.login === datalogin) {
+                                            card.classList.add('golden-border');
+                                        }
+
+                                        card.innerHTML = `
+                                            <div class="card custom-card">
+                                                <img src="/img/${item.photo}" class="card-img-top" alt="Image de l'utilisateur">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${item.prenom} ${item.nom} ${(datalogin === item.login) ? '(Vous) ' : ''}</h5>
+                                                </div>
+                                            </div>
+                                        `;
+
+                                        dynamicCardsContainer.appendChild(card);
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors de la requête GET login :', error);
+                                });
+                        }
+
+
+                        document.getElementById('joinGroupButton').addEventListener('click', function () {
+                            copyToken();
+                        });
+
+                        function copyToken() {
+                            const groupId = new URLSearchParams(window.location.search).get('id');
+
+                            if (!groupId) {
+                                console.error('L\'ID du groupe est manquant dans l\'URL.');
+                                return;
+                            }
+
+                            fetch(`/getToken/${groupId}`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Erreur lors de la récupération du token du groupe.');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    navigator.clipboard.writeText(data[0].token)
+                                        .then(() => {
+                                            alert('Le token a été copié avec succès !');
+                                        })
+                                        .catch(error => {
+                                            console.error('Erreur lors de la copie du token :', error);
+                                            alert('Erreur lors de la copie du token.', error);
+                                        });
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors de la requête GET :', error);
+                                });
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    
+
+    </main>
+
+    <footer id="footer">
+        <p>&copy; 2024 ShareCount. Tous droits reservés.</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
+
