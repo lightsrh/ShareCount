@@ -69,15 +69,15 @@ def create_tables():
     cursor.execute('''
     INSERT INTO groupe (nom, photo, token) VALUES
     ('QSMP', 'cucurucho.jpg', 'qsmp'),
-    ('Pomme', 'pomme.jpg', 'pomme'),
-    ('Sunny', 'sunny.jpg', 'sunny'),
-    ('Empanada', 'empanada.jpg', 'empanada'),
-    ('Richarlyson', 'richarlyson.jpg', 'richarlyson'),
-    ('Dapper', 'dapper.jpg', 'dapper');''')
+    ('France', 'pomme.jpg', 'pomme'),
+    ('Create', 'sunny.jpg', 'sunny'),
+    ('WW', 'empanada.jpg', 'empanada'),
+    ('Bresiliens', 'richarlyson.jpg', 'richarlyson'),
+    ('Demons', 'dapper.jpg', 'dapper');''')
     
 
     cursor.execute('''
-    INSERT INTO utilisateurs (nom, prenom, photo, login, password) VALUES
+    INSERT INTO utilisateurs (prenom, nom, photo, login, password) VALUES
     ('Baghera', 'Jones', 'baghera.jpg', 'baghera', '$2y$10$GNnOYQl3STBoc.YdjCpkAel.kVsjQlGkYW6d8spw2TQ1veesYi1/C'),
     ('BadBoyHalo', '', 'bbh.jpg', 'bbh', '$2y$10$hRlS28SyZdHNma6kJkElOuFxlVONoASxGomTPXnaPEWai7wrNPfyW'),
     ('Bagi', '', 'bagi.jpg', 'bagi', '$2y$10$3QPnjKR1Dx2SXK3n9iZCT.z/TLiUKJVIr2jufnrpnHFZ0ix2nBk7q');''')
