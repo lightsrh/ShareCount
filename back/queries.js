@@ -51,7 +51,7 @@ function getUsers(request, response) {
     const groupId = request.params.groupId;
 
     pool.query(
-        'SELECT utilisateurs.* FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
+        'SELECT utilisateurs.nom, utilisateurs.prenom, utilisateurs.photo, utilisateurs.login FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
         [groupId],
         (error, results) => {
             if (error) {

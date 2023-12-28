@@ -138,6 +138,10 @@ app.get('/rejoindregroupe.html', (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/rejoindregroupe.html"));
 });
 
+app.get('/depense.html', (req, res) => {
+    res.sendFile(path.join(__dirname, "../front/views/depense.html"));
+});
+
 app.get('/create-user', (req, res) => {
   res.sendFile(path.join(__dirname, "../front/views/creermembre.html"));
 });
@@ -145,6 +149,7 @@ app.get('/create-user', (req, res) => {
 
 
 app.get('/logout',(req,res) => {
+    localStorage.clear();
     req.session.destroy();
     res.redirect('/');
 });
@@ -197,3 +202,9 @@ app.get('/getGroups', getGroups);
 
 app.get('/getUsers/:groupId', getUsers);
 app.get('/getToken/:groupId', getToken);
+
+app.get('/getLogin', (req, res) => {
+  const responseData = req.session.userid;
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(responseData));
+});
