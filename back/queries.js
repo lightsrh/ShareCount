@@ -197,30 +197,40 @@ function getDepenses(request, response) {
                     if (existingDetteIndex !== -1) {
                         const existingDette = acc[existingDetteIndex];
                         existingDette.difference += difference;
-            
+                
                         // Ne pas ajouter la dette au nouveau tableau si la différence est nulle
                         if (existingDette.difference !== 0) {
-                            acc.push(existingDette);
+                            acc.push({ ...existingDette }); // Ajouter un nouvel objet avec les valeurs actuelles
                         }
                     } else if (difference !== 0) {
-                        acc.push(curr);
+                        acc.push({ ...curr }); // Ajouter un nouvel objet avec les valeurs actuelles
                     }
                 
                     return acc;
                 }, []);
-                console.log("filteredDettes : ", filteredDettes);         
-                
+                // Parcourir filteredData et supprimer toute ligne ayant -0 ou 0 comme différence
+                filteredDettes.forEach((dette, index) => {
+                    if (dette.difference === 0) {
+                        filteredDettes.splice(index, 1);
+                    }
+                });
+                console.log("filteredDettes : ", filteredDettes);
+                console.log("dettes : ", dettes);
+                var dettes2 = [];
                 filteredDettes.forEach((dette) => {
-                        dettes.push({
+                        dettes2.push({
                             utilisateur_1: dette.utilisateur_2,
                             utilisateur_2: dette.utilisateur_1,
                             difference: -dette.difference
                         });
-                        console.log("nouveau tableau de dettes : ",dettes);
+
                 });
+                console.log("dettes2 : ", dettes2);
+                console.log("dettes : ", dettes);
+                dettes2 = dettes2.concat(dettes);
+                console.log("dettes2 : ", dettes2);
                 
-                console.log(dettes);
-                response.status(200).json(dettes);
+                response.status(200).json(dettes2);
             }
         }
     );
