@@ -18,12 +18,12 @@ const pool = new Pool({
     port: 5432,
 });
 
-const { getUsers, addMember, getGroups, createUser, addToGroup, getToken } = require("./queries");
+const { getUsers, getGroups, createUser, addToGroup, getToken, getDepenses } = require("./queries");
+const { get } = require("http");
 const port = 8080;
 const app = express();
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 const oneDay = 1000 * 60 * 60 * 24;     //milliseconds in a day
 app.use(sessions({
@@ -42,7 +42,7 @@ const checkSession = (req, res, next) => {
     }
   };
 
-app.use(['/home.html', '/group.html', '/addgroup.html, /ajoutmembre.html', 'creergroupe.html', 'rejoindregroupe.html'], checkSession);
+app.use(['/home.html', '/group.html', '/addgroup.html', 'creergroupe.html', 'rejoindregroupe.html'], checkSession);
 
 const hashPassword = async (password) => {
     const saltRounds = 10;
@@ -122,9 +122,7 @@ app.get("/home.html", (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/home.html"));
 });
 
-app.get("/ajoutmembre.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/ajoutmembre.html"));
-});
+
 
 app.get('/front/views/group.html', (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/group.html"));
@@ -153,8 +151,6 @@ app.get('/logout',(req,res) => {
     req.session.destroy();
     res.redirect('/');
 });
-
-app.post('/addMember', addMember);
 
 app.post('/create-user', async (req, res) => {
   try {
@@ -202,6 +198,9 @@ app.get('/getGroups', getGroups);
 
 app.get('/getUsers/:groupId', getUsers);
 app.get('/getToken/:groupId', getToken);
+app.get('/getDepenses/:groupId', getDepenses);
+
+
 
 app.get('/getLogin', (req, res) => {
   const responseData = req.session.userid;
