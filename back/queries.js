@@ -133,7 +133,9 @@ function deleteById(request, response) {
 
 function getDepenses(request, response) {
     console.log("getDepense");
+    
     const groupId = request.params.groupId;
+
     pool.query(
         {
             text: `
@@ -180,6 +182,7 @@ function getDepenses(request, response) {
                 console.error("Erreur :", error);
                 response.status(500).json({ error: "Erreur lors de la récupération des dépenses" });
             } else {
+                // Convertir les résultats de la requête en un tableau de dettes
                 const dettes = results.rows.map(row => ({
                     utilisateur_1: row.utilisateur_1,
                     utilisateur_2: row.utilisateur_2,
@@ -188,6 +191,7 @@ function getDepenses(request, response) {
 
                 console.log("dettes : ", dettes);
 
+                // Filtrer les dettes pour combiner les différences entre utilisateurs
                 const filteredDettes = dettes.reduce((acc, curr) => {
                     const { utilisateur_1, utilisateur_2, difference } = curr;
                     const existingDetteIndex = acc.findIndex(dette => (
@@ -195,6 +199,7 @@ function getDepenses(request, response) {
                     ));
                 
                     if (existingDetteIndex !== -1) {
+                        // Si une dette existante est trouvée, ajuster la différence
                         const existingDette = acc[existingDetteIndex];
                         existingDette.difference += difference;
                 
@@ -203,45 +208,37 @@ function getDepenses(request, response) {
                             acc.push({ ...existingDette }); // Ajouter un nouvel objet avec les valeurs actuelles
                         }
                     } else if (difference !== 0) {
+                        // Ajouter une nouvelle dette si la différence est non nulle
                         acc.push({ ...curr }); // Ajouter un nouvel objet avec les valeurs actuelles
                     }
                 
                     return acc;
                 }, []);
-                // Parcourir filteredData et supprimer toute ligne ayant -0 ou 0 comme différence
+
+                // Supprimer les dettes avec une différence nulle du tableau filtré
                 filteredDettes.forEach((dette, index) => {
                     if (dette.difference === 0) {
                         filteredDettes.splice(index, 1);
                     }
                 });
-                console.log("filteredDettes : ", filteredDettes);
-                console.log("dettes : ", dettes);
+
+                // Inverser les utilisateurs et les différences pour créer un nouveau tableau de dettes
                 var dettes2 = [];
                 filteredDettes.forEach((dette) => {
-                        dettes2.push({
-                            utilisateur_1: dette.utilisateur_2,
-                            utilisateur_2: dette.utilisateur_1,
-                            difference: -dette.difference
-                        });
-
+                    dettes2.push({
+                        utilisateur_1: dette.utilisateur_2,
+                        utilisateur_2: dette.utilisateur_1,
+                        difference: -dette.difference
+                    });
                 });
-                console.log("dettes2 : ", dettes2);
-                console.log("dettes : ", dettes);
+
                 dettes2 = dettes2.concat(dettes);
-                console.log("dettes2 : ", dettes2);
                 
                 response.status(200).json(dettes2);
             }
         }
     );
 }
-
-
-
-
-
-
-
 
 module.exports = {
     getUsers,
