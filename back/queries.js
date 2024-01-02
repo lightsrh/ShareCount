@@ -30,13 +30,13 @@ function getLogin(username, response) {
   
 
   function getGroups(request, response) {
-    login = request.session.userid;
+    login = request.session.userLogin;
     pool.query('select id from utilisateurs where login = $1;', [login], (error, results) => {
         if (error) {
             throw error;
         }
-        userId = results.rows[0].id;
-        pool.query('SELECT g.* FROM groupe g INNER JOIN utilisateur_group ug ON g.id = ug.id_groupe WHERE ug.id_utilisateur = $1;', [userId], (error, results) => {
+        userLogin = results.rows[0].id;
+        pool.query('SELECT g.* FROM groupe g INNER JOIN utilisateur_group ug ON g.id = ug.id_groupe WHERE ug.id_utilisateur = $1;', [userLogin], (error, results) => {
             if (error) {
                 throw error;
             }
@@ -49,18 +49,34 @@ function getLogin(username, response) {
 
 function getUsers(request, response) {
     const groupId = request.params.groupId;
-
-    pool.query(
-        'SELECT utilisateurs.nom, utilisateurs.prenom, utilisateurs.photo, utilisateurs.login FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
-        [groupId],
-        (error, results) => {
-            if (error) {
-                response.status(500).json({ error });
-            } else {
-                response.status(200).json(results.rows);
-            }
+    const userLogin = request.session.userLogin;
+    pool.query('select id from utilisateurs where login = $1;', [userLogin], (error, results) => {
+        if (error) {
+            throw error;
         }
-    );
+        const userId = results.rows[0].id;
+    
+        pool.query('select * from utilisateur_group where id_utilisateur = $1 and id_groupe = $2;', [userId, groupId], (error, results) => {
+            if (error) {
+                throw error;
+            }
+            if (results.rows.length === 0) {
+                response.status(401).json({ error: 'user_not_found' });
+            }
+            else {
+                pool.query(
+                    'SELECT utilisateurs.nom, utilisateurs.prenom, utilisateurs.photo, utilisateurs.login FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
+                    [groupId],
+                    (error, results) => {
+                        if (error) {
+                            response.status(500).json({ error });
+                        } else {
+                            response.status(200).json(results.rows);
+                        }
+                    }
+                );  
+            }}); 
+     });  
 }
 
 function getToken (request, response) {
@@ -132,7 +148,6 @@ function deleteById(request, response) {
 }
 
 function getDepenses(request, response) {
-    console.log("getDepense");
     
     const groupId = request.params.groupId;
 
@@ -189,7 +204,6 @@ function getDepenses(request, response) {
                     difference: parseInt(row.difference, 10)
                 }));
 
-                console.log("dettes : ", dettes);
 
                 // Filtrer les dettes pour combiner les différences entre utilisateurs
                 const filteredDettes = dettes.reduce((acc, curr) => {

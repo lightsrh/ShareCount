@@ -62,10 +62,16 @@
                             fetch(`/getUsers/${groupId}`)
                                 .then(response => response.json())
                                 .then(data => {
+                                    if (data.error === 'user_not_found') {
+                                        alert('Vous n\'êtes pas dans ce groupe.');
+                                        window.location.href = '/';
+                                    }
                                     getDepenses(groupId);
                                     updateDynamicCards(data);
                                 })
                                 .catch(error => {
+                                    
+
                                     console.error('Erreur lors de la requête GET Users :', error);
                                 });
                         }

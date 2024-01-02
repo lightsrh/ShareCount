@@ -85,8 +85,6 @@
             window.onload = function () {
                 const storedData = localStorage.getItem('usersData');
                 const storedLogin = localStorage.getItem('login');
-                console.log(storedData);
-                console.log(storedLogin);
 
                 if (storedData && storedLogin) {
                     const data = JSON.parse(storedData);

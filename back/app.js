@@ -35,7 +35,7 @@ app.use(sessions({
 
 const checkSession = (req, res, next) => {
     session = req.session;
-    if (session.userid) {
+    if (session.userLogin) {
       next();
     } else {
       res.redirect('/');
@@ -79,7 +79,7 @@ app.listen(port, () => {
 
 app.get("/", (req, res) => {
     session=req.session;
-    if(session.userid){
+    if(session.userLogin){
         res.sendFile(path.join(__dirname, "../front/views/home.html"));
     }else
     res.sendFile(path.join(__dirname, "../front/views/login.html"));
@@ -102,7 +102,7 @@ app.post('/login', (req, res) => {
   
         if (user && bcrypt.compare(req.body.password, user.password)) {
           // Créer une session pour l'utilisateur
-          req.session.userid = user.login;
+          req.session.userLogin = user.login;
   
           // Rediriger vers la page d'accueil
           return res.sendFile(path.join(__dirname, "../front/views/home.html"));
@@ -169,7 +169,7 @@ app.post('/create-group', async (req, res) => {
 
   try {
     const result = await pool.query('INSERT INTO groupe (nom, photo, token) VALUES ($1, $2, $3) RETURNING *', [nom, photo, token]);
-    const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userid]);
+    const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userLogin]);
     const id_utilisateur = result2.rows[0].id;
     const id_groupe = result.rows[0].id;
     await addToGroup(res, id_utilisateur, id_groupe);
@@ -182,7 +182,7 @@ app.post('/create-group', async (req, res) => {
 app.post('/joinGroup', async (req, res) => {
   const { token } = req.body;
   try {
-    const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userid]);
+    const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userLogin]);
     const id_utilisateur = result.rows[0].id;
     const result2 = await pool.query('SELECT id FROM groupe WHERE token = $1', [token]);
     const id_groupe = result2.rows[0].id;
@@ -203,7 +203,7 @@ app.get('/getDepenses/:groupId', getDepenses);
 
 
 app.get('/getLogin', (req, res) => {
-  const responseData = req.session.userid;
+  const responseData = req.session.userLogin;
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(responseData));
 });
