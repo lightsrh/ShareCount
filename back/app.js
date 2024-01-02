@@ -179,6 +179,32 @@ app.post('/create-group', async (req, res) => {
   }
 });
 
+app.post('/create-depense', async (req, res) => {
+  const { payer, rembourser, groupe, montant, date, infos } = req.body;
+  const utilisateur_dette = rembourser.split(', ');
+  const insertedRows = [];
+
+  try {
+    for (let i = 0; i < utilisateur_dette.length; i++) {
+      const userdetteLogin = utilisateur_dette[i];
+      //get id of userdetteLogin and of payer
+      const result1 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [userdetteLogin]);
+      console.log(result1.rows);
+      const userdette = result1.rows[0].id;
+      const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [payer]);
+      const utilisateur_acheteur = result2.rows[0].id;
+      const result = await pool.query('INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [utilisateur_acheteur, userdette, groupe, montant / utilisateur_dette.length, date, infos]);
+      insertedRows.push(result.rows[0]);
+    }
+    res.status(200).json(insertedRows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erreur lors de la création de la dépense' });
+  }
+});
+
+
+
 app.post('/joinGroup', async (req, res) => {
   const { token } = req.body;
   try {
