@@ -97,17 +97,17 @@
                         rembourserCheckboxes.innerHTML = '';
 
                         data.forEach(user => {
-                            if (user.prenom + user.nom !== selectedPayer) {
+                            if (user.login !== selectedPayer) {
                                 const checkbox = document.createElement('input');
                                 checkbox.type = 'checkbox';
-                                checkbox.name = 'rembourser[]'; 
-                                checkbox.value = user.prenom + user.nom;
-                                checkbox.id = 'rembourser-' + user.prenom + user.nom;
+                                checkbox.name = 'rembourser'; 
+                                checkbox.value = user.login;
+                                checkbox.id = 'rembourser-' + user.login;
                                 checkbox.style.width = 'auto';
 
                                 const label = document.createElement('label');
-                                label.htmlFor = 'rembourser-' + user.prenom + user.nom;
-                                label.appendChild(document.createTextNode(user.prenom + user.nom));
+                                label.htmlFor = 'rembourser-' + user.login;
+                                label.appendChild(document.createTextNode(user.login));
 
                                 const div = document.createElement('div');
                                 div.style.display = 'flex'; 
@@ -122,8 +122,8 @@
 
                     data.forEach(user => {
                         const option = document.createElement('option');
-                        option.value = user.prenom + user.nom;
-                        option.text = user.prenom + user.nom;
+                        option.value = user.login;
+                        option.text = user.login;
                         payerSelect.appendChild(option);
                     });
 
@@ -138,6 +138,52 @@
                     window.location.href = '/group.html';
                 }
             };
+
+            //listen for validation
+            // create-depense.js
+
+        const form = document.getElementById('createExpenseForm');
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                // If the key already exists in the data object (for checkboxes), append the value
+                if (data.hasOwnProperty(key)) {
+                    data[key] += `, ${value}`;
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            try {
+                const storedGroup = localStorage.getItem('groupId');
+
+                console.log(data);
+                data['groupe'] = storedGroup;
+                const response = await fetch('/create-depense', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    alert('Dépense créée avec succès !');
+                    window.location.href = `/front/views/group.html?id=${storedGroup}`;
+                    localStorage.removeItem('groupId');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la requête POST :', error);
+            }
+        });
+
         </script>
     </main>
 

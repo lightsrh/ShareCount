@@ -147,8 +147,8 @@ function deleteById(request, response) {
     });
 }
 
-function getDepenses(request, response) {
-    
+function getDepenses(request, response) {    
+
     const groupId = request.params.groupId;
 
     pool.query(
@@ -247,6 +247,11 @@ function getDepenses(request, response) {
                 });
 
                 dettes2 = dettes2.concat(dettes);
+                for (depense in dettes2) {
+                    if (depense.difference == 0) {
+                        dettes2.splice(depense, 1);
+                    }
+                }
                 
                 response.status(200).json(dettes2);
             }

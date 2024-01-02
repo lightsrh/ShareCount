@@ -57,6 +57,7 @@
                         function getUsers() {
                             // Récupérer l'ID du groupe depuis l'URL
                             const groupId = new URLSearchParams(window.location.search).get('id');
+                            localStorage.setItem('groupId', groupId);
 
                             // Faire une requête pour récupérer les utilisateurs du groupe
                             fetch(`/getUsers/${groupId}`)
