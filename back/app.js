@@ -18,7 +18,7 @@ const pool = new Pool({
     port: 5432,
 });
 
-const { getUsers, getGroups, createUser, addToGroup, getToken, getDepenses } = require("./queries");
+const { getUsers, getGroups, createUser, addToGroup, getToken, getDepenses, rembourser } = require("./queries");
 const { get } = require("http");
 const port = 8080;
 const app = express();
@@ -226,10 +226,22 @@ app.get('/getUsers/:groupId', getUsers);
 app.get('/getToken/:groupId', getToken);
 app.get('/getDepenses/:groupId', getDepenses);
 
+app.post('/rembourser', rembourser);
 
 
-app.get('/getLogin', (req, res) => {
-  const responseData = req.session.userLogin;
+
+app.get('/getLogin', async (req, res) => {
+  let responseData = [];
+  if (req.session.userLogin) {
+    responseData.push(req.session.userLogin);
+    const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userLogin]);
+    if (result.rows && result.rows.length > 0) {
+      responseData.push(result.rows[0].id);
+      console.log(responseData);
+      console.log(result.rows[0].id)
+    }
+  }
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(responseData));
 });
+

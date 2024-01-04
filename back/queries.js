@@ -65,7 +65,7 @@ function getUsers(request, response) {
             }
             else {
                 pool.query(
-                    'SELECT utilisateurs.nom, utilisateurs.prenom, utilisateurs.photo, utilisateurs.login FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
+                    'SELECT utilisateurs.id, utilisateurs.nom, utilisateurs.prenom, utilisateurs.photo, utilisateurs.login FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
                     [groupId],
                     (error, results) => {
                         if (error) {
@@ -204,7 +204,7 @@ function getDepenses(request, response) {
                     difference: parseInt(row.difference, 10)
                 }));
 
-
+                /*
                 // Filtrer les dettes pour combiner les différences entre utilisateurs
                 const filteredDettes = dettes.reduce((acc, curr) => {
                     const { utilisateur_1, utilisateur_2, difference } = curr;
@@ -251,12 +251,26 @@ function getDepenses(request, response) {
                     if (depense.difference == 0) {
                         dettes2.splice(depense, 1);
                     }
-                }
+                }*/
+                const dettes2 = dettes;
                 
                 response.status(200).json(dettes2);
             }
         }
     );
+}
+
+function rembourser(request, response) {
+    const { utilisateur_1, utilisateur_2, groupId, date, montant  } = request.body;
+    const infos = "Remboursement";
+    pool.query('INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [utilisateur_1, utilisateur_2, groupId, montant, date, infos], (error, results) => {
+        if (error) {
+            console.error("Erreur :", error);
+            response.status(500).json({ error: "Erreur lors de la récupération des dépenses" });
+        } else {
+            response.status(200).json(results.rows);
+        }
+    });
 }
 
 module.exports = {
@@ -268,5 +282,6 @@ module.exports = {
     addToGroup,
     getToken,
     addToGroup,
-    getDepenses
+    getDepenses,
+    rembourser
 };
