@@ -107,12 +107,12 @@ app.post('/login', (req, res) => {
           // Rediriger vers la page d'accueil
           return res.sendFile(path.join(__dirname, "../front/views/home.html"));
         } else {
-          return res.send('Identifiant ou mot de passe incorrect');
+          res.status(500).json({ error: 'Echec de l\authentification' });
         }
       });
     } catch (error) {
       console.error('Erreur lors de la connexion :', error);
-      return res.sendStatus(500);
+          return res.sendStatus(500);
     }
   });
   
@@ -147,7 +147,6 @@ app.get('/create-user', (req, res) => {
 
 
 app.get('/logout',(req,res) => {
-    localStorage.clear();
     req.session.destroy();
     res.redirect('/');
 });
