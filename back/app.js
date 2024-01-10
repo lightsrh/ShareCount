@@ -85,36 +85,29 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/login.html"));
 });
 
-app.post('/login', (req, res) => {
-    try {
-      pool.query('SELECT login, password FROM utilisateurs WHERE login = $1 LIMIT 1', [req.body.username], (error, results) => {
-        if (error) {
-          console.error('Erreur lors de la requête SQL :', error);
-          return res.sendStatus(500);
-        }
-  
-        if (results.rows.length === 0) {
-          // Aucun utilisateur trouvé avec ce nom d'utilisateur
-          return res.sendStatus(401);
-        }
-  
-        const user = results.rows[0];
-  
-        if (user && bcrypt.compare(req.body.password, user.password)) {
-          // Créer une session pour l'utilisateur
+app.post('/login', async (req, res) => {
+  try {
+      const results = await pool.query('SELECT login, password FROM utilisateurs WHERE login = $1 LIMIT 1', [req.body.username]);
+
+      if (results.rows.length === 0) {
+          return res.sendFile(path.join(__dirname, "../front/views/login.html"));
+      }
+      const user = results.rows[0];
+      bcrypt.compare(req.body.password, user.password).then(function(result) {
+        if (result) {
           req.session.userLogin = user.login;
-  
-          // Rediriger vers la page d'accueil
           return res.sendFile(path.join(__dirname, "../front/views/home.html"));
-        } else {
-          res.status(500).json({ error: 'Echec de l\authentification' });
-        }
-      });
-    } catch (error) {
+      } else {
+        return res.sendFile(path.join(__dirname, "../front/views/login.html"));
+      }
+    });
+
+      
+  } catch (error) {
       console.error('Erreur lors de la connexion :', error);
-          return res.sendStatus(500);
-    }
-  });
+      return res.sendStatus(500);
+  }
+});
   
   
 
@@ -144,6 +137,11 @@ app.get('/create-user', (req, res) => {
   res.sendFile(path.join(__dirname, "../front/views/creermembre.html"));
 });
 
+
+app.get('/depense', (req, res) => {
+    res.sendFile(path.join(__dirname, "../front/views/depense.html"));
+}
+);
 
 
 app.get('/logout',(req,res) => {

@@ -78,9 +78,9 @@ def create_tables():
 
     cursor.execute('''
     INSERT INTO utilisateurs (prenom, nom, photo, login, password) VALUES
-    ('Baghera', 'Jones', 'baghera.jpg', 'baghera', '$2y$10$GNnOYQl3STBoc.YdjCpkAel.kVsjQlGkYW6d8spw2TQ1veesYi1/C'),
-    ('BadBoyHalo', '', 'bbh.jpg', 'bbh', '$2y$10$hRlS28SyZdHNma6kJkElOuFxlVONoASxGomTPXnaPEWai7wrNPfyW'),
-    ('Bagi', '', 'bagi.jpg', 'bagi', '$2y$10$3QPnjKR1Dx2SXK3n9iZCT.z/TLiUKJVIr2jufnrpnHFZ0ix2nBk7q');''')
+    ('Baghera', 'Jones', 'baghera.jpg', 'baghera', '$2b$10$pfFeLApq1IFVNcZenUDA1.j3Xk5MlAuofsKb9yfMjjHyjdOJfeHp6'),
+    ('BadBoyHalo', '', 'bbh.jpg', 'bbh', '$2b$10$fEWsN6azZ2SSTbcw9OPIReZEls44osQLTwmppdrCjyJbXtb27UARe'),
+    ('Sarah', '', 'bagi.jpg', 'sarah', '$2b$10$8Qxs5eUt9cnDyT39mxmxk.CRhcErgTgmX7Qr/qz2s57gtT92HF5My');''')
 
     cursor.execute('''
     INSERT INTO utilisateur_group (id_utilisateur, id_groupe) VALUES
