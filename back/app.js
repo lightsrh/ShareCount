@@ -186,7 +186,6 @@ app.post('/create-depense', async (req, res) => {
       const userdetteLogin = utilisateur_dette[i];
       //get id of userdetteLogin and of payer
       const result1 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [userdetteLogin]);
-      console.log(result1.rows);
       const userdette = result1.rows[0].id;
       const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [payer]);
       const utilisateur_acheteur = result2.rows[0].id;
@@ -234,8 +233,6 @@ app.get('/getLogin', async (req, res) => {
     const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userLogin]);
     if (result.rows && result.rows.length > 0) {
       responseData.push(result.rows[0].id);
-      console.log(responseData);
-      console.log(result.rows[0].id)
     }
   }
   res.setHeader('Content-Type', 'application/json');
