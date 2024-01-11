@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/group.css">
 
     <title>ShareCount</title>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -46,8 +46,22 @@
 
 
     <main>
-        <div id="dynamicCardsContainer" class="container">
-        </div>
+
+        <div class="row mb-3 text-top" >
+            <div class="col-md-3 themed-grid-col" id="historique">
+                <h2 id="titre">Historique des dépenses</h2>
+                <div id="dynamicDepenseContainer" class="container flex-container flex-wrap"></div>
+            </div>
+            <div class="col-md-6 themed-grid-col" style="align-self: start;">
+                <div id="dynamicCardsContainer" class="container"> </div>
+                
+            </div>
+            <div class="col-md-3 themed-grid-col" id = "histogramme">
+                <h2 id = "titre">Histogramme</h2>
+            </div>
+          </div>            
+            
+    </div>
 
         <div class="container">
             <div class="row">
@@ -58,11 +72,9 @@
                         };
 
                         function getUsers() {
-                            // Récupérer l'ID du groupe depuis l'URL
                             const groupId = new URLSearchParams(window.location.search).get('id');
                             localStorage.setItem('groupId', groupId);
 
-                            // Faire une requête pour récupérer les utilisateurs du groupe
                             fetch(`/getUsers/${groupId}`)
                                 .then(response => response.json())
                                 .then(data => {
@@ -87,6 +99,8 @@
                                     localStorage.setItem('depensesData', JSON.stringify(dataDepense));
                                     console.log(dataDepense);
                                     updateDynamicCards(data);
+                                    // Appel de la fonction pour mettre à jour dynamicDepenseContainer
+                                    updateDynamicDepenseContainer(dataDepense);
                                 })
                                 .catch(error => {
                                     console.error('Erreur lors de la requête GET Depenses :', error);
@@ -163,6 +177,7 @@
                                 });
                         }
 
+                        
 
 
                         document.getElementById('joinGroupButton').addEventListener('click', function () {
@@ -245,8 +260,36 @@
                             }
                         });
 
+                    </script>
+                </div>
+            </div>
+        </div>
 
+        <div class="container">
+            <div class ="row">
+                <div class = "col-12">
+                    <script>
+                        function updateDynamicDepenseContainer(depensesData) {
+                            const dynamicDepenseContainer = document.getElementById('dynamicDepenseContainer');
+                            dynamicDepenseContainer.innerHTML = '';
 
+                            depensesData.forEach(depense => {
+                                const depenseCard = document.createElement('div');
+                                depenseCard.className = 'flex-item custom-card'; // Ajoutez la classe 'custom-card'
+
+                                depenseCard.innerHTML = `
+                                    <div class="card" style="border: 1px solid #000000;">
+                                        <div class="card-body">
+                                            <p class="card-text">${depense.informations}</p>
+                                            <p class="card-text">Montant: ${depense.prix} €</p>
+                                            <p class="card-text">Date: ${depense.date}</p>
+                                        </div>
+                                    </div>
+                                `;
+
+                                dynamicDepenseContainer.appendChild(depenseCard);
+                            });
+                        }
                     </script>
                 </div>
             </div>
