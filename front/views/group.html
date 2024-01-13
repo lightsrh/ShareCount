@@ -95,12 +95,20 @@
                         function getDepenses(groupId, data) {
                             fetch(`/getDepenses/${groupId}`)
                                 .then(response => response.json())
-                                .then(dataDepense => {
-                                    localStorage.setItem('depensesData', JSON.stringify(dataDepense));
-                                    console.log(dataDepense);
+                                .then(dataDettes => {
+                                    localStorage.setItem('dettesData', JSON.stringify(dataDettes));
+                                    console.log(dataDettes);
                                     updateDynamicCards(data);
                                     // Appel de la fonction pour mettre à jour dynamicDepenseContainer
-                                    updateDynamicDepenseContainer(dataDepense);
+                                    fetch(`/getTransactions/${groupId}`)
+                                        .then(response => response.json())
+                                        .then(dataDepenses => {
+                                            localStorage.setItem('dataDepenses', JSON.stringify(dataDepenses));
+                                            updateDynamicDepenseContainer();
+                                        })
+                                        .catch(error => {
+                                            console.error('Erreur lors de la requête GET Transactions :', error);
+                                        });
                                 })
                                 .catch(error => {
                                     console.error('Erreur lors de la requête GET Depenses :', error);
@@ -118,7 +126,7 @@
                                     dynamicCardsContainer.innerHTML = '';
                                     dynamicCardsContainer.className = 'flex-container';
 
-                                    const depensesData = JSON.parse(localStorage.getItem('depensesData')) || [];
+                                    const dettesData = JSON.parse(localStorage.getItem('dettesData')) || [];
 
                                     data.forEach(item => {
                                         const card = document.createElement('div');
@@ -126,7 +134,7 @@
                                         
 
                                         let userTotal;
-                                        depensesData.forEach(depense => {
+                                        dettesData.forEach(depense => {
                                             if (depense.utilisateur_1 === datalogin[1] && depense.utilisateur_2 === item.id && userTotal === undefined) {
                                                 console.log("1"+depense);
                                                 userTotal = depense.difference;
@@ -169,7 +177,7 @@
 
 
                                         dynamicCardsContainer.appendChild(card);
-                                        localStorage.removeItem('depensesData');
+                                        localStorage.removeItem('dettesData');
                                     });
                                 })
                                 .catch(error => {
@@ -266,33 +274,47 @@
         </div>
 
         <div class="container">
-            <div class ="row">
-                <div class = "col-12">
+            <div class="row">
+                <div class="col-12">
                     <script>
-                        function updateDynamicDepenseContainer(depensesData) {
+                        function updateDynamicDepenseContainer() {
+                            const dataDepenses = JSON.parse(localStorage.getItem('dataDepenses')) || [];
                             const dynamicDepenseContainer = document.getElementById('dynamicDepenseContainer');
                             dynamicDepenseContainer.innerHTML = '';
-
-                            depensesData.forEach(depense => {
+                            console.log(dataDepenses);
+                            console.log(dataDepenses[0].utilisateur_acheteur)
+        
+                            dataDepenses.forEach(dataDepense => {
                                 const depenseCard = document.createElement('div');
                                 depenseCard.className = 'flex-item custom-card'; // Ajoutez la classe 'custom-card'
-
+        
+                                // Formate la date comme jour-mois-année
+                                const formattedDate = new Date(dataDepense.date).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'numeric',
+                                    year: 'numeric'
+                                });
+        
                                 depenseCard.innerHTML = `
                                     <div class="card" style="border: 1px solid #000000;">
                                         <div class="card-body">
-                                            <p class="card-text">${depense.informations}</p>
-                                            <p class="card-text">Montant: ${depense.prix} €</p>
-                                            <p class="card-text">Date: ${depense.date}</p>
+                                            <p class="card-text"><strong>${dataDepense.informations}</strong></p>
+                                            <p class="card-text">Montant: ${dataDepense.prix} €</p>
+                                            <p class="card-text">Date: ${formattedDate}</p>
+                                            <p class="card-text">Acheteur: ${dataDepense.utilisateur_acheteur}</p>
+                                            <p class="card-text">Pour: ${dataDepense.utilisateur_dette}</p>
                                         </div>
                                     </div>
                                 `;
-
+        
                                 dynamicDepenseContainer.appendChild(depenseCard);
                             });
                         }
                     </script>
                 </div>
             </div>
+        </div>
+        
         </div>
     
 
