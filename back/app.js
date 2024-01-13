@@ -18,7 +18,7 @@ const pool = new Pool({
     port: 5432,
 });
 
-const { getUsers, getGroups, createUser, addToGroup, getToken, getDepenses, rembourser } = require("./queries");
+const { getUsers, getGroups, createUser, addToGroup, getToken, getDepenses, rembourser, getTransactions } = require("./queries");
 const { get } = require("http");
 const port = 8080;
 const app = express();
@@ -221,6 +221,7 @@ app.get('/getGroups', getGroups);
 app.get('/getUsers/:groupId', getUsers);
 app.get('/getToken/:groupId', getToken);
 app.get('/getDepenses/:groupId', getDepenses);
+app.get('/getTransactions/:groupId', getTransactions);
 
 app.post('/rembourser', rembourser);
 

@@ -260,16 +260,72 @@ function getDepenses(request, response) {
     );
 }
 
+function getTransactions(request, response) {
+    const groupId = request.params.groupId;
+    pool.query('SELECT * FROM depense WHERE groupe = $1;', [groupId], (error, results) => {
+        if (error) {
+            console.error("Erreur :", error);
+            response.status(500).json({ error: "Erreur lors de la récupération des transactions" });
+        } else {
+            const promises = results.rows.map((element) => {
+                return new Promise((resolve, reject) => {
+                    pool.query('SELECT prenom, nom FROM utilisateurs WHERE id = $1;', [element.utilisateur_acheteur], (error, results2) => {
+                        if (error) {
+                            console.error("Erreur :", error);
+                            reject("Erreur lors de la récupération des transactions");
+                        } else {
+                            element.utilisateur_acheteur = results2.rows[0].prenom + " " + results2.rows[0].nom;
+
+                            const subPromises = [];
+                                subPromises.push(new Promise((resolveSub, rejectSub) => {
+                                    pool.query('SELECT prenom, nom FROM utilisateurs WHERE id = $1;', [element.utilisateur_dette], (error, results3) => {
+                                        if (error) {
+                                            console.error("Erreur :", error);
+                                            rejectSub("Erreur lors de la récupération des transactions");
+                                        } else {
+                                            
+                                                element.utilisateur_dette = results3.rows[0].prenom + " " + results3.rows[0].nom;
+                                            
+                                            resolveSub();
+                                        }
+                                    });
+                                }));
+
+                            Promise.all(subPromises)
+                                .then(() => {
+                                    resolve();
+                                })
+                                .catch((subError) => {
+                                    reject(subError);
+                                });
+                        }
+                    });
+                });
+            });
+
+            Promise.all(promises)
+                .then(() => {
+                    response.status(200).json(results.rows);
+                })
+                .catch((error) => {
+                    response.status(500).json({ error });
+                });
+        }
+    });
+}
+
+    
+
 function rembourser(request, response) {
     const { utilisateur_1, utilisateur_2, groupId, date, montant  } = request.body;
-    const infos = "Remboursement";
+        const infos = "Remboursement";
     pool.query('INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [utilisateur_1, utilisateur_2, groupId, montant, date, infos], (error, results) => {
         if (error) {
             console.error("Erreur :", error);
             response.status(500).json({ error: "Erreur lors de la récupération des dépenses" });
         } else {
-            response.status(200).json(results.rows);
-        }
+                                        response.status(200).json(results.rows);
+                                }
     });
 }
 
@@ -283,5 +339,6 @@ module.exports = {
     getToken,
     addToGroup,
     getDepenses,
+    getTransactions,
     rembourser
 };
