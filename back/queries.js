@@ -204,54 +204,7 @@ function getDepenses(request, response) {
                     difference: parseInt(row.difference, 10)
                 }));
 
-                /*
-                // Filtrer les dettes pour combiner les différences entre utilisateurs
-                const filteredDettes = dettes.reduce((acc, curr) => {
-                    const { utilisateur_1, utilisateur_2, difference } = curr;
-                    const existingDetteIndex = acc.findIndex(dette => (
-                        dette.utilisateur_1 === utilisateur_2 && dette.utilisateur_2 === utilisateur_1
-                    ));
                 
-                    if (existingDetteIndex !== -1) {
-                        // Si une dette existante est trouvée, ajuster la différence
-                        const existingDette = acc[existingDetteIndex];
-                        existingDette.difference += difference;
-                
-                        // Ne pas ajouter la dette au nouveau tableau si la différence est nulle
-                        if (existingDette.difference !== 0) {
-                            acc.push({ ...existingDette }); // Ajouter un nouvel objet avec les valeurs actuelles
-                        }
-                    } else if (difference !== 0) {
-                        // Ajouter une nouvelle dette si la différence est non nulle
-                        acc.push({ ...curr }); // Ajouter un nouvel objet avec les valeurs actuelles
-                    }
-                
-                    return acc;
-                }, []);
-
-                // Supprimer les dettes avec une différence nulle du tableau filtré
-                filteredDettes.forEach((dette, index) => {
-                    if (dette.difference === 0) {
-                        filteredDettes.splice(index, 1);
-                    }
-                });
-
-                // Inverser les utilisateurs et les différences pour créer un nouveau tableau de dettes
-                var dettes2 = [];
-                filteredDettes.forEach((dette) => {
-                    dettes2.push({
-                        utilisateur_1: dette.utilisateur_2,
-                        utilisateur_2: dette.utilisateur_1,
-                        difference: -dette.difference
-                    });
-                });
-
-                dettes2 = dettes2.concat(dettes);
-                for (depense in dettes2) {
-                    if (depense.difference == 0) {
-                        dettes2.splice(depense, 1);
-                    }
-                }*/
                 const dettes2 = dettes;
                 
                 response.status(200).json(dettes2);
@@ -342,3 +295,53 @@ module.exports = {
     getTransactions,
     rembourser
 };
+
+
+/*
+                // Filtrer les dettes pour combiner les différences entre utilisateurs
+                const filteredDettes = dettes.reduce((acc, curr) => {
+                    const { utilisateur_1, utilisateur_2, difference } = curr;
+                    const existingDetteIndex = acc.findIndex(dette => (
+                        dette.utilisateur_1 === utilisateur_2 && dette.utilisateur_2 === utilisateur_1
+                    ));
+                
+                    if (existingDetteIndex !== -1) {
+                        // Si une dette existante est trouvée, ajuster la différence
+                        const existingDette = acc[existingDetteIndex];
+                        existingDette.difference += difference;
+                
+                        // Ne pas ajouter la dette au nouveau tableau si la différence est nulle
+                        if (existingDette.difference !== 0) {
+                            acc.push({ ...existingDette }); // Ajouter un nouvel objet avec les valeurs actuelles
+                        }
+                    } else if (difference !== 0) {
+                        // Ajouter une nouvelle dette si la différence est non nulle
+                        acc.push({ ...curr }); // Ajouter un nouvel objet avec les valeurs actuelles
+                    }
+                
+                    return acc;
+                }, []);
+
+                // Supprimer les dettes avec une différence nulle du tableau filtré
+                filteredDettes.forEach((dette, index) => {
+                    if (dette.difference === 0) {
+                        filteredDettes.splice(index, 1);
+                    }
+                });
+
+                // Inverser les utilisateurs et les différences pour créer un nouveau tableau de dettes
+                var dettes2 = [];
+                filteredDettes.forEach((dette) => {
+                    dettes2.push({
+                        utilisateur_1: dette.utilisateur_2,
+                        utilisateur_2: dette.utilisateur_1,
+                        difference: -dette.difference
+                    });
+                });
+
+                dettes2 = dettes2.concat(dettes);
+                for (depense in dettes2) {
+                    if (depense.difference == 0) {
+                        dettes2.splice(depense, 1);
+                    }
+                }*/

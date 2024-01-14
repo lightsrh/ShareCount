@@ -1,15 +1,16 @@
 import psycopg2
 
-def create_tables():
-    conn = psycopg2.connect(
-        dbname="sharecount",
-        user="postgres",
-        password="postgres",
-        host="localhost",
-        port=5432
-    )
-    
-    cursor = conn.cursor()
+def drop_tables(cursor):
+    # Drop tables in reverse order to avoid foreign key constraints
+    cursor.execute('DROP TABLE IF EXISTS depense_endette;')
+    cursor.execute('DROP TABLE IF EXISTS depense;')
+    cursor.execute('DROP TABLE IF EXISTS utilisateur_group;')
+    cursor.execute('DROP TABLE IF EXISTS groupe;')
+    cursor.execute('DROP TABLE IF EXISTS utilisateurs;')
+
+
+
+def create_tables(cursor):
 
     # Table Utilisateurs
     cursor.execute('''
@@ -44,10 +45,12 @@ def create_tables():
 
     # Table Depense
     cursor.execute('''
-    CREATE TABLE depense (
+    CREATE  TABLE depense (
         id serial PRIMARY KEY,
-        utilisateur_acheteur INT REFERENCES utilisateurs(id) NOT NULL,
-                utilisateur_dette INT REFERENCES utilisateurs(id) NOT NULL,
+        utilisateur_acheteur INT NOT NULL,
+        utilisateur_dette INT NOT NULL,
+        FOREIGN KEY (utilisateur_acheteur) REFERENCES utilisateurs(id),
+        FOREIGN KEY (utilisateur_dette) REFERENCES utilisateurs(id),
         groupe INT REFERENCES groupe(id) NOT NULL,
         prix INT NOT NULL,
         date DATE,
@@ -58,7 +61,7 @@ def create_tables():
 
     '''# Table Depense-endette
     cursor.execute(
-    CREATE TABLE depense_endette (
+    CREATE  TABLE depense_endette (
         id_depense INT REFERENCES depense(id) NOT NULL,
         id_payeur INT REFERENCES utilisateurs(id) NOT NULL,
         id_endette INT REFERENCES utilisateurs(id) NOT NULL,
@@ -153,9 +156,20 @@ def create_tables():
 ''')
 
 
+if __name__ == "__main__":
+    conn = psycopg2.connect(
+        dbname="sharecount",
+        user="postgres",
+        password="postgres",
+        host="localhost",
+        port=5432
+    )
+    
+    cursor = conn.cursor()
+
+    drop_tables(cursor)
+    create_tables(cursor)
+
     conn.commit()
     cursor.close()
     conn.close()
-
-if __name__ == "__main__":
-    create_tables()

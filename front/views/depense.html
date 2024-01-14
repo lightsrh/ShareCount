@@ -161,7 +161,6 @@
             try {
                 const storedGroup = localStorage.getItem('groupId');
 
-                console.log(data);
                 data['groupe'] = storedGroup;
                 const response = await fetch('/create-depense', {
                     method: 'POST',
