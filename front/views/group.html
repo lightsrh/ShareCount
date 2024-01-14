@@ -150,7 +150,7 @@
                                             <div class="custom-card" data-user-id="${item.id}" data-user-total="${userTotal}">
                                                 <div class="card-body" id="myCardBody">
                                                     <h5 class="card-title">${item.prenom} ${item.nom} ${(datalogin === item.login) ? '(Vous) ' : ''}</h5>
-                                                    <p style="background-color: ${userTotal !== undefined ? (userTotal < 0 ? '#ff3333' : (userTotal > 0 ? '#99ff33' : 'transparent')) : 'transparent'}">
+                                                    <p id="remboursementdu">
                                                         ${item.login !== datalogin[0] 
                                                             ? (userTotal !== undefined 
                                                                 ? (userTotal < 0 
@@ -169,12 +169,7 @@
                                         `;
 
 
-                                        var cardBody = card.querySelector('.custom-card');
-                                        if (item.login === datalogin[0]) {
-                                            cardBody.classList.add('golden-border');
-                                        } else {
-                                            cardBody.classList.add('black-border');
-                                        }
+                                        
 
 
                                         dynamicCardsContainer.appendChild(card);
@@ -295,7 +290,7 @@
                                 });
         
                                 depenseCard.innerHTML = `
-                                    <div class="card" style="border: 1px solid #000000;">
+                                    <div class="card" >
                                         <div class="card-body">
                                             <p class="card-text"><strong>${dataDepense.informations}</strong></p>
                                             <p class="card-text">Montant: ${dataDepense.prix} €</p>
