@@ -168,6 +168,7 @@ a:hover {
 
 #titre {
     text-align: center;
+    margin-left: 40px;
 }
 
 #historique {
@@ -177,15 +178,38 @@ a:hover {
 
 #histogramme {
     align-self: start;
+    margin-top: 50px;
+    height: 100vh; /* Set the height to 70% of the viewport height */
 }
+
+#barChart {
+    width: 180%; /* Set the width to 100% to fill the container */
+    height: 100%; /* Set the height to 100% to fill the container */
+    margin-right: 20px;
+}
+
+
 
 #dynamicDepenseContainer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-evenly;
     height: 100%;
     margin-bottom: 50px;
+    margin-left: 40px;
 }
 
+
+#dynamicCardsContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 100%;
+    margin-bottom: 50px;
+    margin-left: 40px;
+    margin-right: 20px;
+    margin-top: 50px;
+}
 

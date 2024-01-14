@@ -16,6 +16,7 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     
@@ -49,17 +50,16 @@
     <main>
 
         <div class="row mb-3 text-top" >
-            <div class="col-md-3 themed-grid-col" id="historique">
+            <div class="col-md-2 themed-grid-col" id="historique">
                 <h2 id="titre">Historique des dépenses</h2>
                 <div id="dynamicDepenseContainer" class="container flex-container flex-wrap"></div>
             </div>
-            <div class="col-md-6 themed-grid-col" style="align-self: start;">
+            <div class="col-md-6 themed-grid-col" style="align-self: start;" >
                 <div id="dynamicCardsContainer" class="container"> </div>
                 
             </div>
-            <div class="col-md-3 themed-grid-col" id = "histogramme">
-                <h2 id = "titre">Histogramme</h2>
-                <canvas id="barChart" width="400" height="200"></canvas>
+            <div class="col-md-4 themed-grid-col" id = "histogramme">
+                <canvas id="barChart"></canvas>
             </div>
           </div>            
             
@@ -319,7 +319,15 @@
         <script>
             function histogramme() {
                 const dettesData = JSON.parse(localStorage.getItem('dettesData')) || [];
-                const userId = JSON.parse(localStorage.getItem('login'))[1];
+                const loginData = JSON.parse(localStorage.getItem('login')) || [];
+                
+                if (loginData.length < 2) {
+                    console.error('Données de connexion manquantes.');
+                    return;
+                }
+        
+                const userId = loginData[1];
+                const userLogin = loginData[0];
                 console.log(dettesData);
         
                 const userDettesData = dettesData.filter(dette => {
@@ -331,40 +339,75 @@
                     }
                     return false;
                 });
-        
-                const labels = userDettesData.map(dette => `ID ${dette.utilisateur_1 === userId ? dette.utilisateur_2 : dette.utilisateur_1}`);
-                const data = userDettesData.map(dette => Math.abs(dette.difference));
-                const backgroundColor = userDettesData.map(dette => (dette.difference >= 0 ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)'));
-                const borderColor = userDettesData.map(dette => (dette.difference >= 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'));
-        
-                var ctx = document.getElementById('barChart').getContext('2d');
-        
-                var chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Montant',
-                            data: data,
-                            backgroundColor: backgroundColor,
-                            borderColor: borderColor,
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            };
-        </script>
-        
-        
-    
 
+                if (userDettesData.length != 0) {
+                    
+                    fetch(`/getUsers/${localStorage.getItem('groupId')}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Erreur lors de la requête GET Users. Statut : ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(usersData => {
+                            userDettesData.forEach(dette => {
+                                usersData.forEach(user => {
+                                    if (user.id === dette.utilisateur_1) {
+                                        dette.utilisateur_1 = user.prenom + ' ' + user.nom;
+                                    } else if (user.id === dette.utilisateur_2) {
+                                        dette.utilisateur_2 = user.prenom + ' ' + user.nom;
+                                    }
+                                });
+                            });
+            
+                            const labels = userDettesData.map(dette => {
+                                const autreUtilisateur = (dette.utilisateur_1.trim().toLowerCase() === userLogin.trim()) ? dette.utilisateur_2 : dette.utilisateur_1;
+                                return ` ${autreUtilisateur}`;
+                            });
+
+
+                            const chartData = userDettesData.map(dette => dette.difference);
+                            const backgroundColor = userDettesData.map(dette => (dette.difference >= 0 ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)'));
+                            const borderColor = userDettesData.map(dette => (dette.difference >= 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'));
+            
+                            var ctx = document.getElementById('barChart').getContext('2d');
+            
+                            var chart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Montant',
+                                        data: chartData,
+                                        backgroundColor: backgroundColor,
+                                        borderColor: borderColor,
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true
+                                        },
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    },
+                                    indexAxis: 'y',
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        },
+                                    }
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la requête GET Users :', error);
+                        });
+                }
+            };
+        </script> 
     </main>
 
     <footer id="footer">

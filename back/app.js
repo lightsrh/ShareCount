@@ -240,3 +240,9 @@ app.get('/getLogin', async (req, res) => {
   res.send(JSON.stringify(responseData));
 });
 
+app.get('/getUsers', async (req, res) => {
+  const result = await pool.query('SELECT prenom, nom, id FROM utilisateurs');
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(result.rows));
+});
+

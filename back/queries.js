@@ -205,7 +205,17 @@ function getDepenses(request, response) {
                 }));
 
                 
-                const dettes2 = dettes;
+                let dettes2 = dettes;
+
+                dettes2 = dettes2.filter(dette => dette.difference !== 0);
+
+                for (let i = 0; i < dettes2.length; i++) {
+                    for (let j = 0; j < dettes2.length; j++) {
+                        if (dettes2[i].utilisateur_1 === dettes2[j].utilisateur_2 && dettes2[i].utilisateur_2 === dettes2[j].utilisateur_1 && dettes2[i].difference === -dettes2[j].difference) {
+                            dettes2.splice(j, 1);
+                        }
+                    }
+                }
                 
                 response.status(200).json(dettes2);
             }

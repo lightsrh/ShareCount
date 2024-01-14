@@ -52,7 +52,7 @@ def create_tables(cursor):
         FOREIGN KEY (utilisateur_acheteur) REFERENCES utilisateurs(id),
         FOREIGN KEY (utilisateur_dette) REFERENCES utilisateurs(id),
         groupe INT REFERENCES groupe(id) NOT NULL,
-        prix INT NOT NULL,
+        prix FLOAT NOT NULL,
         date DATE,
         justificatif text,
         informations text
