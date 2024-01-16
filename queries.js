@@ -4,11 +4,11 @@ const { response } = require('express');
 
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'sharecount', // Nom de la base de données que vous avez créée
-    password: 'postgres',
-    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 });
 
 function getLogin(username, response) {
