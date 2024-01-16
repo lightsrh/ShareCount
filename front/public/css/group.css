@@ -5,21 +5,9 @@ body {
     padding: 0;
 }
 
-/* Header styles */
-
 header {
     background: linear-gradient(to right, #090ca1a9, #090ca149);
     padding: 10px;
-}
-
-header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header .row {
-    width: 100%;
 }
 
 header h1 {
@@ -32,8 +20,6 @@ header a {
     text-decoration: none;
 }
 
-
-/* Main content styles */
 .main-content {
     max-width: 800px;
     margin: 20px auto;
@@ -51,12 +37,8 @@ header a {
     line-height: 1.5;
 }
 
-
-
-
-/* Footer styles */
 footer {
-    position: fixed;  /* Utilisez position: fixed; au lieu de position: absolute; */
+    position: fixed;
     bottom: 0;
     width: 100%;
     background-color: #333;
@@ -65,10 +47,6 @@ footer {
     text-align: center;
 }
 
-footer p {
-    margin: 0;
-}
-/* Links styles */
 a {
     color: #1a1818;
     text-decoration: none;
@@ -93,23 +71,13 @@ a:hover {
     align-items: center;
 }
 
-.card {
-    width: 18rem;
-}
-
-
-.card-title {
-    text-align: center;
-}
-
-/* Add this CSS for custom cards */
 .custom-card {
     max-width: 300px;
     min-width: 200px;
     margin-bottom: 20px;
-    border: 1px solid #030e03; /* Golden border */
+    border: 1px solid #030e03;
     border-radius: 5px;
-    overflow: hidden; /* Hide content overflow */
+    overflow: hidden;
 }
 
 .custom-card .card-body {
@@ -132,9 +100,9 @@ a:hover {
 
 .custom-card button {
     margin-top: 10px;
-    background-color: #d695d3; /* Adjust the background color */
+    background-color: #d695d3;
     width: 60%;
-    color: #fff; /* Text color */
+    color: #fff;
     border: none;
     padding: 5px;
     cursor: pointer;
@@ -144,75 +112,25 @@ a:hover {
     opacity: 0.1;
 }
 
-
 .card-img-top {
     width: 50%;
     height: 12vw;
     object-fit: fill;
 }
 
-#remboursementdu{
-    margin-top: 5px;
-}
-
-#rembourser{
-    background-color: #a3a3a3;
-}
-
-.flex-container {
-    display: flex;
-    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne si nécessaire */
-    justify-content: space-between; /* Ajoute une marge entre les éléments */
-    align-items: center;
-    margin-top: 2%;
-    margin-left: 25%;
-    margin-right: 25%;
-}
-
-#ajout {
-    margin: 10px;
-    background-color: #d695d3;
-    width: 60%;
-}
-
-#flex-row {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    /* Ajoutez cette ligne */
-}
-
-#justi {
-    margin: 2px;
-    background-color: #d457cec2;
-    width: 40%;
-}
-
-#titre {
-    text-align: center;
-    margin-left: 40px;
-}
-
-#historique {
-    align-self: start;
-    margin-bottom: 20px; /* Adjust the margin as needed */
-}
-
-#histogramme {
-    align-self: start;
-    margin-top: 50px;
-    height: 100vh; /* Set the height to 70% of the viewport height */
+#historique .scroll-container {
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 #barChart {
-    width: 180%; /* Set the width to 100% to fill the container */
-    height: 100%; /* Set the height to 100% to fill the container */
+    width: 180%;
+    height: 100%;
     margin-right: 20px;
 }
 
-
-
-#dynamicDepenseContainer {
+#dynamicDepenseContainer,
+#dynamicCardsContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -222,18 +140,12 @@ a:hover {
     margin-left: 40px;
 }
 
-
-#dynamicCardsContainer{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-    height: 100%;
-    margin-bottom: 50px;
-    margin-left: 40px;
+#dynamicCardsContainer {
     margin-right: 20px;
     margin-top: 50px;
 }
 
-
-
+#titre{
+    text-align: center;
+    margin-top: 50px;
+}

@@ -173,7 +173,7 @@ app.post('/create-group', async (req, res) => {
 });
 
 app.post('/create-depense', async (req, res) => {
-  const { payer, rembourser, groupe, montant, date, infos } = req.body;
+  const { payer, rembourser, groupe, montant, date, infos, titre } = req.body;
   const utilisateur_dette = rembourser.split(', ');
   const insertedRows = [];
 
@@ -187,7 +187,7 @@ app.post('/create-depense', async (req, res) => {
       const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [payer]);
       const utilisateur_acheteur = result2.rows[0].id;
 
-      const result = await pool.query('INSERT INTO depense (id_depense, utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [id_depense, utilisateur_acheteur, userdette, groupe, montant / utilisateur_dette.length, date, infos]);
+      const result = await pool.query('INSERT INTO depense (id_depense, utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations, titre, total_prix) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [id_depense, utilisateur_acheteur, userdette, groupe, montant / utilisateur_dette.length, date, infos, titre, montant]);
       insertedRows.push(result.rows[0]);
     }
     res.status(200).json(insertedRows);

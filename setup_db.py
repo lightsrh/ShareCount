@@ -55,22 +55,13 @@ def create_tables(cursor):
         FOREIGN KEY (utilisateur_dette) REFERENCES utilisateurs(id),
         groupe INT REFERENCES groupe(id) NOT NULL,
         prix FLOAT NOT NULL,
+        total_prix FLOAT NOT NULL,
         date DATE,
         justificatif text,
-        informations text
+        informations text,
+        titre text
     );
     ''')
-
-
-    '''# Table Depense-endette
-    cursor.execute(
-    CREATE  TABLE depense_endette (
-        id_depense INT REFERENCES depense(id) NOT NULL,
-        id_payeur INT REFERENCES utilisateurs(id) NOT NULL,
-        id_endette INT REFERENCES utilisateurs(id) NOT NULL,
-        PRIMARY KEY (id_depense, id_utilisateur)
-    );
-    )'''
 
     cursor.execute('''
     INSERT INTO groupe (nom, photo, token) VALUES
@@ -115,47 +106,47 @@ def create_tables(cursor):
 
 
     cursor.execute('''
-    INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, justificatif, informations, id_depense) VALUES
+    INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, justificatif, informations, id_depense, total_prix, titre) VALUES
     -- Groupe 1
-    (1, 2, 1, 100, '2021-01-01', 'justificatif1.jpg', 'informations1', 1),
-    (1, 3, 1, 600, '2021-01-01', 'justificatif2.jpg', 'informations2', 2),
-    (2, 1, 1, 160, '2021-01-01', 'justificatif3.jpg', 'informations3', 3),
-    (2, 3, 1, 10000, '2021-01-01', 'justificatif4.jpg', 'informations4', 4),
-    (3, 1, 1, 90, '2021-01-01', 'justificatif5.jpg', 'informations5', 5),
+    (1, 2, 1, 100, '2021-01-01', 'justificatif1.jpg', 'informations1', 1, 100, 'Titre 1'),
+    (1, 3, 1, 600, '2021-01-01', 'justificatif2.jpg', 'informations2', 2, 600, 'Titre 2'),
+    (2, 1, 1, 160, '2021-01-01', 'justificatif3.jpg', 'informations3', 3, 160, 'Titre 3'),
+    (2, 3, 1, 10000, '2021-01-01', 'justificatif4.jpg', 'informations4', 4, 10000, 'Titre 4'),
+    (3, 1, 1, 90, '2021-01-01', 'justificatif5.jpg', 'informations5', 5, 90, 'Titre 5'),
 
     -- Groupe 2
-    (1, 2, 2, 120, '2021-01-02', 'justificatif6.jpg', 'informations6', 6),
-    (1, 3, 2, 800, '2021-01-02', 'justificatif7.jpg', 'informations7', 7),
-    (2, 1, 2, 180, '2021-01-02', 'justificatif8.jpg', 'informations8', 8),
-    (2, 3, 2, 12000, '2021-01-02', 'justificatif9.jpg', 'informations9', 9),
-    (3, 1, 2, 110, '2021-01-02', 'justificatif10.jpg', 'informations10', 10),
+    (1, 2, 2, 120, '2021-01-02', 'justificatif6.jpg', 'informations6', 6, 120, 'Titre 6'),
+    (1, 3, 2, 800, '2021-01-02', 'justificatif7.jpg', 'informations7', 7, 800, 'Titre 7'),
+    (2, 1, 2, 180, '2021-01-02', 'justificatif8.jpg', 'informations8', 8, 180, 'Titre 8'),
+    (2, 3, 2, 12000, '2021-01-02', 'justificatif9.jpg', 'informations9', 9, 12000, 'Titre 9'),
+    (3, 1, 2, 110, '2021-01-02', 'justificatif10.jpg', 'informations10', 10, 110, 'Titre 10'),
 
     -- Groupe 3
-    (1, 2, 3, 150, '2021-01-03', 'justificatif11.jpg', 'informations11', 11),
-    (1, 3, 3, 1000, '2021-01-03', 'justificatif12.jpg', 'informations12', 12),
-    (2, 1, 3, 200, '2021-01-03', 'justificatif13.jpg', 'informations13', 13),
-    (2, 3, 3, 15000, '2021-01-03', 'justificatif14.jpg', 'informations14', 14),
-    (3, 1, 3, 120, '2021-01-03', 'justificatif15.jpg', 'informations15', 15),
+    (1, 2, 3, 150, '2021-01-03', 'justificatif11.jpg', 'informations11', 11, 150, 'Titre 11'),
+    (1, 3, 3, 1000, '2021-01-03', 'justificatif12.jpg', 'informations12', 12, 1000, 'Titre 12'),
+    (2, 1, 3, 200, '2021-01-03', 'justificatif13.jpg', 'informations13', 13, 200, 'Titre 13'),
+    (2, 3, 3, 15000, '2021-01-03', 'justificatif14.jpg', 'informations14', 14, 15000, 'Titre 14'),
+    (3, 1, 3, 120, '2021-01-03', 'justificatif15.jpg', 'informations15', 15, 120, 'Titre 15'),
 
     -- Groupe 4
-    (1, 2, 4, 130, '2021-01-04', 'justificatif16.jpg', 'informations16', 16),
-    (1, 3, 4, 900, '2021-01-04', 'justificatif17.jpg', 'informations17', 17),
-    (2, 1, 4, 220, '2021-01-04', 'justificatif18.jpg', 'informations18', 18),
-    (2, 1, 4, 120, '2021-01-04', 'justificatif18.jpg', 'informations18', 19),
-    (1, 2, 4, 800, '2021-01-04', 'justificatif18.jpg', 'informations18', 20),
-    (2, 1, 4, 50, '2021-01-04', 'justificatif18.jpg', 'informations18', 21),
-    (2, 3, 4, 400, '2021-01-04', 'justificatif18.jpg', 'informations18', 22),
+    (1, 2, 4, 130, '2021-01-04', 'justificatif16.jpg', 'informations16', 16, 130, 'Titre 16'),
+    (1, 3, 4, 900, '2021-01-04', 'justificatif17.jpg', 'informations17', 17, 900, 'Titre 17'),
+    (2, 1, 4, 220, '2021-01-04', 'justificatif18.jpg', 'informations18', 18 , 220, 'Titre 18'),
+    (2, 1, 4, 120, '2021-01-04', 'justificatif18.jpg', 'informations18', 19, 120, 'Titre 19'),
+    (1, 2, 4, 800, '2021-01-04', 'justificatif18.jpg', 'informations18', 20, 800, 'Titre 20'),
+    (2, 1, 4, 50, '2021-01-04', 'justificatif18.jpg', 'informations18', 21, 50, 'Titre 21'),
+    (2, 3, 4, 400, '2021-01-04', 'justificatif18.jpg', 'informations18', 22, 400, 'Titre 22'),
 
 
     -- Groupe 5
-    (1, 2, 5, 140, '2021-01-05', 'justificatif19.jpg', 'informations19', 23),
-    (1, 3, 5, 1100, '2021-01-05', 'justificatif20.jpg', 'informations20', 24),
-    (2, 1, 5, 240, '2021-01-05', 'justificatif21.jpg', 'informations21', 25),
+    (1, 2, 5, 140, '2021-01-05', 'justificatif19.jpg', 'informations19', 23, 140, 'Titre 23'),
+    (1, 3, 5, 1100, '2021-01-05', 'justificatif20.jpg', 'informations20', 24, 1100, 'Titre 24'),
+    (2, 1, 5, 240, '2021-01-05', 'justificatif21.jpg', 'informations21', 25, 240, 'Titre 25'),
 
     -- Groupe 6
-    (1, 2, 6, 150, '2021-01-06', 'justificatif22.jpg', 'informations22', 26),
-    (1, 3, 6, 1200, '2021-01-06', 'justificatif23.jpg', 'informations23', 27),
-    (2, 1, 6, 260, '2021-01-06', 'justificatif24.jpg', 'informations24', 28);
+    (1, 2, 6, 150, '2021-01-06', 'justificatif22.jpg', 'informations22', 26, 150, 'Titre 26'),
+    (1, 3, 6, 1200, '2021-01-06', 'justificatif23.jpg', 'informations23', 27, 1200, 'Titre 27'),
+    (2, 1, 6, 260, '2021-01-06', 'justificatif24.jpg', 'informations24', 28, 260, 'Titre 28');
 ''')
 
 
