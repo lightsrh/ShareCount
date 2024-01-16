@@ -18,12 +18,12 @@ const pool = new Pool({
     port: 5432,
 });
 
-const { getUsers, addMember, getGroups, createUser, addToGroup, getToken } = require("./queries");
+const { getUsers, getGroups, createUser, addToGroup, getToken, getDepenses, rembourser, getTransactions } = require("./queries");
+const { get } = require("http");
 const port = 8080;
 const app = express();
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 const oneDay = 1000 * 60 * 60 * 24;     //milliseconds in a day
 app.use(sessions({
@@ -35,14 +35,14 @@ app.use(sessions({
 
 const checkSession = (req, res, next) => {
     session = req.session;
-    if (session.userid) {
+    if (session.userLogin) {
       next();
     } else {
       res.redirect('/');
     }
   };
 
-app.use(['/home.html', '/group.html', '/addgroup.html, /ajoutmembre.html', 'creergroupe.html', 'rejoindregroupe.html'], checkSession);
+app.use(['/home.html', '/group.html', '/addgroup.html', 'creergroupe.html', 'rejoindregroupe.html'], checkSession);
 
 const hashPassword = async (password) => {
     const saltRounds = 10;
@@ -79,42 +79,34 @@ app.listen(port, () => {
 
 app.get("/", (req, res) => {
     session=req.session;
-    if(session.userid){
+    if(session.userLogin){
         res.sendFile(path.join(__dirname, "../front/views/home.html"));
     }else
     res.sendFile(path.join(__dirname, "../front/views/login.html"));
 });
 
-app.post('/login', (req, res) => {
-    try {
-      pool.query('SELECT login, password FROM utilisateurs WHERE login = $1 LIMIT 1', [req.body.username], (error, results) => {
-        if (error) {
-          console.error('Erreur lors de la requête SQL :', error);
-          return res.sendStatus(500);
-        }
-  
-        if (results.rows.length === 0) {
-          // Aucun utilisateur trouvé avec ce nom d'utilisateur
-          return res.sendStatus(401);
-        }
-  
-        const user = results.rows[0];
-  
-        if (user && bcrypt.compare(req.body.password, user.password)) {
-          // Créer une session pour l'utilisateur
-          req.session.userid = user.login;
-  
-          // Rediriger vers la page d'accueil
+app.post('/login', async (req, res) => {
+  try {
+      const results = await pool.query('SELECT login, password FROM utilisateurs WHERE login = $1 LIMIT 1', [req.body.username]);
+
+      if (results.rows.length === 0) {
+          return res.sendFile(path.join(__dirname, "../front/views/login.html"));
+      }
+      const user = results.rows[0];
+      bcrypt.compare(req.body.password, user.password).then(function(result) {
+        if (result) {
+          req.session.userLogin = user.login;
           return res.sendFile(path.join(__dirname, "../front/views/home.html"));
-        } else {
-          return res.send('Identifiant ou mot de passe incorrect');
-        }
-      });
-    } catch (error) {
-      console.error('Erreur lors de la connexion :', error);
+      } else {
+        return res.status(500).json({ error: 'identifiants de connexion incorrects : ' + error});      }
+    });
+
+      
+  } catch (error) {
+    console.error('Erreur lors de la connexion :', error);
       return res.sendStatus(500);
-    }
-  });
+  }
+});
   
   
 
@@ -122,9 +114,7 @@ app.get("/home.html", (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/home.html"));
 });
 
-app.get("/ajoutmembre.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/ajoutmembre.html"));
-});
+
 
 app.get('/front/views/group.html', (req, res) => {
     res.sendFile(path.join(__dirname, "../front/views/group.html"));
@@ -147,14 +137,16 @@ app.get('/create-user', (req, res) => {
 });
 
 
+app.get('/depense', (req, res) => {
+    res.sendFile(path.join(__dirname, "../front/views/depense.html"));
+}
+);
+
 
 app.get('/logout',(req,res) => {
-    localStorage.clear();
     req.session.destroy();
     res.redirect('/');
 });
-
-app.post('/addMember', addMember);
 
 app.post('/create-user', async (req, res) => {
   try {
@@ -173,26 +165,49 @@ app.post('/create-group', async (req, res) => {
 
   try {
     const result = await pool.query('INSERT INTO groupe (nom, photo, token) VALUES ($1, $2, $3) RETURNING *', [nom, photo, token]);
-    const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userid]);
+    const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userLogin]);
     const id_utilisateur = result2.rows[0].id;
     const id_groupe = result.rows[0].id;
     await addToGroup(res, id_utilisateur, id_groupe);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Erreur lors de la création du groupe' });
   }
 });
 
+app.post('/create-depense', async (req, res) => {
+  const { payer, rembourser, groupe, montant, date, infos } = req.body;
+  const utilisateur_dette = rembourser.split(', ');
+  const insertedRows = [];
+
+  try {
+    for (let i = 0; i < utilisateur_dette.length; i++) {
+      const userdetteLogin = utilisateur_dette[i];
+      const result1 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [userdetteLogin]);
+      const userdette = result1.rows[0].id;
+      const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [payer]);
+      const utilisateur_acheteur = result2.rows[0].id;
+
+      const result = await pool.query('INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [utilisateur_acheteur, userdette, groupe, montant / utilisateur_dette.length, date, infos]);
+      insertedRows.push(result.rows[0]);
+    }
+    res.status(200).json(insertedRows);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de la création de la dépense : '+ error });
+  }
+});
+
+
+
+
 app.post('/joinGroup', async (req, res) => {
   const { token } = req.body;
   try {
-    const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userid]);
+    const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userLogin]);
     const id_utilisateur = result.rows[0].id;
     const result2 = await pool.query('SELECT id FROM groupe WHERE token = $1', [token]);
     const id_groupe = result2.rows[0].id;
     await addToGroup(res, id_utilisateur, id_groupe);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Erreur lors de l\'ajout au groupe' });
   }
 });
@@ -202,9 +217,29 @@ app.get('/getGroups', getGroups);
 
 app.get('/getUsers/:groupId', getUsers);
 app.get('/getToken/:groupId', getToken);
+app.get('/getDepenses/:groupId', getDepenses);
+app.get('/getTransactions/:groupId', getTransactions);
 
-app.get('/getLogin', (req, res) => {
-  const responseData = req.session.userid;
+app.post('/rembourser', rembourser);
+
+
+
+app.get('/getLogin', async (req, res) => {
+  let responseData = [];
+  if (req.session.userLogin) {
+    responseData.push(req.session.userLogin);
+    const result = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [req.session.userLogin]);
+    if (result.rows && result.rows.length > 0) {
+      responseData.push(result.rows[0].id);
+    }
+  }
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(responseData));
 });
+
+app.get('/getUsers', async (req, res) => {
+  const result = await pool.query('SELECT prenom, nom, id FROM utilisateurs');
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(result.rows));
+});
+

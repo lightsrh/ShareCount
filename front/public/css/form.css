@@ -7,7 +7,7 @@ body {
 
 /* Header styles */
 header {
-    background: linear-gradient(to left, #47e64f, #8e54e9);
+    background: linear-gradient(to right, #090ca1a9, #090ca149);
     padding: 10px;
 }
 
@@ -110,3 +110,5 @@ form button {
     color: #fff;
     cursor: pointer;
 }
+
+

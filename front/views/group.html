@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/group.css">
 
     <title>ShareCount</title>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -15,6 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     
@@ -28,8 +30,10 @@
             </div>
         </div>
         <div class="column-2">
-            <!--<a href="ajoutmembre.html" class="btn btn-outline-dark" id="addMemberLink">Ajouter un membre au groupe</a>-->
-            <a href='/logout' class="btn btn-outline-danger">
+            <a href='/logout' class="btn btn-outline-danger" >
+                <script>
+                        localStorage.clear();
+                </script>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"></path>
                     <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"></path>
@@ -38,14 +42,28 @@
             </a> 
             <a href="/" class="btn btn-outline-dark" id="addMemberLink">Revenir aux groupes</a>
             <button class="btn btn-outline-dark" id="joinGroupButton">Copier le token du groupe</button>
-            <a href="/depense.html" class="btn btn-outline-dark" id="depenseLink">Créer une nouvelle dépense</a>
+            <a href="/depense" class="btn btn-outline-dark" id="depenseLink">Créer une nouvelle dépense</a>
         </div>
     </header>
 
 
     <main>
-        <div id="dynamicCardsContainer" class="container">
-        </div>
+
+        <div class="row mb-3 text-top" >
+            <div class="col-md-2 themed-grid-col" id="historique">
+                <h2 id="titre">Historique des dépenses</h2>
+                <div id="dynamicDepenseContainer" class="container flex-container flex-wrap"></div>
+            </div>
+            <div class="col-md-6 themed-grid-col" style="align-self: start;" >
+                <div id="dynamicCardsContainer" class="container"> </div>
+                
+            </div>
+            <div class="col-md-4 themed-grid-col" id = "histogramme">
+                <canvas id="barChart"></canvas>
+            </div>
+          </div>            
+            
+    </div>
 
         <div class="container">
             <div class="row">
@@ -53,56 +71,117 @@
                     <script>
                         window.onload = function () {
                             getUsers();
+                            
                         };
 
                         function getUsers() {
-                            // Récupérer l'ID du groupe depuis l'URL
                             const groupId = new URLSearchParams(window.location.search).get('id');
+                            localStorage.setItem('groupId', groupId);
 
-                            // Faire une requête pour récupérer les utilisateurs du groupe
                             fetch(`/getUsers/${groupId}`)
                                 .then(response => response.json())
                                 .then(data => {
-                                    updateDynamicCards(data);
+                                    if (data.error === 'user_not_found') {
+                                        alert('Vous n\'êtes pas dans ce groupe.');
+                                        window.location.href = '/';
+                                    }
+                                    getDepenses(groupId, data);
+                                    
                                 })
                                 .catch(error => {
+                                    
+
                                     console.error('Erreur lors de la requête GET Users :', error);
+                                });
+                        }
+
+                        function getDepenses(groupId, data) {
+                            fetch(`/getDepenses/${groupId}`)
+                                .then(response => response.json())
+                                .then(dataDettes => {
+                                    localStorage.setItem('dettesData', JSON.stringify(dataDettes));
+                                    updateDynamicCards(data);
+                                    // Appel de la fonction pour mettre à jour dynamicDepenseContainer
+                                    fetch(`/getTransactions/${groupId}`)
+                                        .then(response => response.json())
+                                        .then(dataDepenses => {
+                                            localStorage.setItem('dataDepenses', JSON.stringify(dataDepenses));
+                                            updateDynamicDepenseContainer();
+                                        })
+                                        .catch(error => {
+                                            console.error('Erreur lors de la requête GET Transactions :', error);
+                                        });
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors de la requête GET Depenses :', error);
                                 });
                         }
 
                         function updateDynamicCards(data) {
                             localStorage.setItem('usersData', JSON.stringify(data));
+
                             fetch(`/getLogin`)
                                 .then(response => response.json())
                                 .then(datalogin => {
-                                    localStorage.setItem('login', datalogin);
+                                    localStorage.setItem('login', JSON.stringify(datalogin));
+                                    histogramme();
                                     const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
                                     dynamicCardsContainer.innerHTML = '';
                                     dynamicCardsContainer.className = 'flex-container';
 
+                                    const dettesData = JSON.parse(localStorage.getItem('dettesData')) || [];
+
                                     data.forEach(item => {
                                         const card = document.createElement('div');
                                         card.className = 'flex-item';
-                                        if (item.login === datalogin) {
-                                            card.classList.add('golden-border');
-                                        }
+                                        
+
+                                        let userTotal;
+                                        dettesData.forEach(depense => {
+                                            if (depense.utilisateur_1 === datalogin[1] && depense.utilisateur_2 === item.id && userTotal === undefined) {
+                                                userTotal = depense.difference;
+                                            }
+                                            else if (depense.utilisateur_2 === datalogin[1] && depense.utilisateur_1 === item.id  && userTotal === undefined) {
+                                                userTotal = - depense.difference;
+                                            }
+                                        });
 
                                         card.innerHTML = `
-                                            <div class="card custom-card">
-                                                <img src="/img/${item.photo}" class="card-img-top" alt="Image de l'utilisateur">
-                                                <div class="card-body">
+                                            <div class="custom-card" data-user-id="${item.id}" data-user-total="${userTotal}">
+                                                <div class="card-body" id="myCardBody">
                                                     <h5 class="card-title">${item.prenom} ${item.nom} ${(datalogin === item.login) ? '(Vous) ' : ''}</h5>
+                                                    <p id="remboursementdu">
+                                                        ${item.login !== datalogin[0] 
+                                                            ? (userTotal !== undefined 
+                                                                ? (userTotal < 0 
+                                                                    ? `Vous devez : ${Math.abs(userTotal)} €` 
+                                                                    : (userTotal > 0 
+                                                                        ? `Vous doit ${Math.abs(userTotal)} €` 
+                                                                        : 'Vous êtes à l\'équilibre !')) 
+                                                                : 'Vous êtes à l\'équilibre !') 
+                                                            : '(Vous)'}
+                                                    </p>
+                                                    ${(userTotal !== undefined && userTotal < 0) 
+                                                        ? '<button class="btn btn-outline-dark" id="rembourser">Rembourser</button>' 
+                                                        : '<div style="width: 100px; height: 40px;"></div>'}
                                                 </div>
                                             </div>
                                         `;
 
+
+                                        
+
+
                                         dynamicCardsContainer.appendChild(card);
+                                        localStorage.removeItem('dettesData');
                                     });
                                 })
                                 .catch(error => {
                                     console.error('Erreur lors de la requête GET login :', error);
                                 });
                         }
+
+                        
 
 
                         document.getElementById('joinGroupButton').addEventListener('click', function () {
@@ -138,12 +217,192 @@
                                     console.error('Erreur lors de la requête GET :', error);
                                 });
                         }
+
+                        document.getElementById('dynamicCardsContainer').addEventListener('click', function (event) {
+                            const target = event.target.closest('.custom-card');
+                            
+                            if (target) {
+                                const cardUserId = target.dataset.userId;
+                                const groupId = localStorage.getItem('groupId');
+                                const userTotal = parseFloat(target.dataset.userTotal);
+                                const utilisateurConnecteId = JSON.parse(localStorage.getItem('login'))[1];
+
+                                const currentDate = new Date().toISOString().split('T')[0];
+
+                                const remboursementData = {
+                                    utilisateur_1: utilisateurConnecteId,
+                                    utilisateur_2: parseInt(cardUserId, 10),
+                                    groupId: parseInt(groupId, 10),
+                                    date: currentDate,
+                                    montant: Math.abs(userTotal)
+                                };
+
+                                console.log(remboursementData);
+
+                                fetch('/rembourser', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(remboursementData)
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.error) {
+                                        throw new Error(data.error);
+                                    }
+                                    console.log('Remboursement réussi :', data);
+                                    alert('Remboursement réussi !');
+                                    window.location.href = `/front/views/group.html?id=${groupId}`;
+                                })
+                                .catch(error => {
+                                    console.error('Erreur lors du remboursement :', error);
+                                    alert('Erreur lors du remboursement.');
+                                });
+                            } else {
+                                console.error('Element avec la classe .custom-card non trouvé.');
+                            }
+                        });
+
                     </script>
                 </div>
             </div>
         </div>
-    
 
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <script>
+                        function updateDynamicDepenseContainer() {
+                            const dataDepenses = JSON.parse(localStorage.getItem('dataDepenses')) || [];
+                            const dynamicDepenseContainer = document.getElementById('dynamicDepenseContainer');
+                            dynamicDepenseContainer.innerHTML = '';
+        
+                            dataDepenses.forEach(dataDepense => {
+                                const depenseCard = document.createElement('div');
+                                depenseCard.className = 'flex-item custom-card'; // Ajoutez la classe 'custom-card'
+        
+                                // Formate la date comme jour-mois-année
+                                const formattedDate = new Date(dataDepense.date).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'numeric',
+                                    year: 'numeric'
+                                });
+        
+                                depenseCard.innerHTML = `
+                                    <div class="card" >
+                                        <div class="card-body">
+                                            <p class="card-text"><strong>${dataDepense.informations}</strong></p>
+                                            <p class="card-text">Montant: ${dataDepense.prix} €</p>
+                                            <p class="card-text">Date: ${formattedDate}</p>
+                                            <p class="card-text">Acheteur: ${dataDepense.utilisateur_acheteur}</p>
+                                            <p class="card-text">Pour: ${dataDepense.utilisateur_dette}</p>
+                                        </div>
+                                    </div>
+                                `;
+        
+                                dynamicDepenseContainer.appendChild(depenseCard);
+                            });
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+
+        <script>
+            function histogramme() {
+                const dettesData = JSON.parse(localStorage.getItem('dettesData')) || [];
+                const loginData = JSON.parse(localStorage.getItem('login')) || [];
+                
+                if (loginData.length < 2) {
+                    console.error('Données de connexion manquantes.');
+                    return;
+                }
+        
+                const userId = loginData[1];
+                const userLogin = loginData[0];
+                console.log(dettesData);
+        
+                const userDettesData = dettesData.filter(dette => {
+                    if (dette.utilisateur_1 === userId) {
+                        return true;
+                    } else if (dette.utilisateur_2 === userId) {
+                        dette.difference = -dette.difference;
+                        return true;
+                    }
+                    return false;
+                });
+
+                if (userDettesData.length != 0) {
+                    
+                    fetch(`/getUsers/${localStorage.getItem('groupId')}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Erreur lors de la requête GET Users. Statut : ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(usersData => {
+                            userDettesData.forEach(dette => {
+                                usersData.forEach(user => {
+                                    if (user.id === dette.utilisateur_1) {
+                                        dette.utilisateur_1 = user.prenom + ' ' + user.nom;
+                                    } else if (user.id === dette.utilisateur_2) {
+                                        dette.utilisateur_2 = user.prenom + ' ' + user.nom;
+                                    }
+                                });
+                            });
+            
+                            const labels = userDettesData.map(dette => {
+                                const autreUtilisateur = (dette.utilisateur_1.trim().toLowerCase() === userLogin.trim()) ? dette.utilisateur_2 : dette.utilisateur_1;
+                                return ` ${autreUtilisateur}`;
+                            });
+
+
+                            const chartData = userDettesData.map(dette => dette.difference);
+                            const backgroundColor = userDettesData.map(dette => (dette.difference >= 0 ? 'rgba(75, 192, 192, 0.2)' : 'rgba(255, 99, 132, 0.2)'));
+                            const borderColor = userDettesData.map(dette => (dette.difference >= 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'));
+            
+                            var ctx = document.getElementById('barChart').getContext('2d');
+            
+                            var chart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Montant',
+                                        data: chartData,
+                                        backgroundColor: backgroundColor,
+                                        borderColor: borderColor,
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true
+                                        },
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    },
+                                    indexAxis: 'y',
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        },
+                                    }
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la requête GET Users :', error);
+                        });
+                }
+            };
+        </script> 
     </main>
 
     <footer id="footer">
