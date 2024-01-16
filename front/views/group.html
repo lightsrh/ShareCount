@@ -288,44 +288,76 @@
                         function updateDynamicDepenseContainer() {
                             const dataDepenses = JSON.parse(localStorage.getItem('dataDepenses')) || [];
                             const dynamicDepenseContainer = document.getElementById('dynamicDepenseContainer');
+
                             if (dataDepenses.length > 0) {
                                 dynamicDepenseContainer.innerHTML = '';
-            
-                                dataDepenses.forEach(dataDepense => {
+
+                                const groupedDepenses = groupBy(dataDepenses, 'id_depense');
+
+                                Object.keys(groupedDepenses).forEach(idDepense => {
+                                    const depensesGroup = groupedDepenses[idDepense];
                                     const depenseCard = document.createElement('div');
-                                    depenseCard.className = 'flex-item custom-card'; // Ajoutez la classe 'custom-card'
-            
-                                    // Formate la date comme jour-mois-année
-                                    const formattedDate = new Date(dataDepense.date).toLocaleDateString('fr-FR', {
-                                        day: 'numeric',
-                                        month: 'numeric',
-                                        year: 'numeric'
-                                    });
-            
+                                    depenseCard.className = 'flex-item custom-card';
+
                                     depenseCard.innerHTML = `
-                                        <div class="card" >
+                                        <div class="card">
                                             <div class="card-body">
-                                                <p class="card-text"><strong>${dataDepense.informations}</strong></p>
-                                                <p class="card-text">Montant: ${dataDepense.prix} €</p>
-                                                <p class="card-text">Date: ${formattedDate}</p>
-                                                <p class="card-text">Acheteur: ${dataDepense.utilisateur_acheteur}</p>
-                                                <p class="card-text">Pour: ${dataDepense.utilisateur_dette}</p>
+                                                ${depensesGroup.map((depense, index) => {
+                                                    const formattedDate = new Date(depense.date).toLocaleDateString('fr-FR', {
+                                                        day: 'numeric',
+                                                        month: 'numeric',
+                                                        year: 'numeric'
+                                                    });
+
+                                                    const commonInfo = index === 0 ? `
+                                                        <p class="card-text"><strong>${depense.informations}</strong></p>
+                                                        <p class="card-text">Montant: ${depense.prix} €</p>
+                                                        <p class="card-text">Date: ${formattedDate}</p>
+                                                        <p class="card-text">Acheteur: ${depense.utilisateur_acheteur}</p>
+                                                        <p class="card-text">Pour: ${Array.isArray(depense.utilisateur_dette) ? depense.utilisateur_dette.join(', ') : depense.utilisateur_dette}</p>
+                                                    ` : '';
+
+                                                    
+                                                    const utilisateursDette = index === 0 ? '' : `${Array.isArray(depense.utilisateur_dette) ? depense.utilisateur_dette.join(', ') : depense.utilisateur_dette}`;
+
+                                                    return commonInfo + utilisateursDette;
+                                                }).join('')}
                                             </div>
                                         </div>
                                     `;
-            
+
+
+
+
+
                                     dynamicDepenseContainer.appendChild(depenseCard);
                                 });
-                            }
-                            else{
-                                //show no depense but not in a card
+                            } else {
+                                // Show no depense but not in a card
                                 dynamicDepenseContainer.innerHTML = `
                                     <p class="card-text"><strong>Aucune dépense</strong></p>
                                     <p class="card-text">Vous pouvez en créer une en cliquant sur le bouton "Créer une nouvelle dépense"</p>
-                                    ` 
-                                
+                                `;
                             }
                         }
+
+                        function concatenateUtilisateurDette(depensesGroup) {
+                            // Concatenate utilisateur_dette for depensesGroup with the same id_depense
+                            const uniqueUtilisateurDette = [...new Set(depensesGroup.map(depense => depense.utilisateur_dette))];
+                            return uniqueUtilisateurDette.join(', ');
+                        }
+
+                        function groupBy(array, key) {
+                            return array.reduce((result, currentValue) => {
+                                (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
+                                console.log(result);
+                                return result;
+                            }, {});
+                        }
+
+
+                        
+
                     </script>
                 </div>
             </div>
