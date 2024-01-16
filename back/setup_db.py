@@ -156,6 +156,48 @@ def create_tables(cursor):
 ''')
 
 
+def create_trigger(cursor):
+    cursor.execute('''
+    CREATE OR REPLACE FUNCTION check_depense()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        -- Vérifier que la somme ne dépasse pas la limite de INT et n'est pas négative
+        IF NEW.prix < 0 OR NEW.prix > 2147483647 THEN
+            RAISE EXCEPTION 'La somme doit être positive et ne pas dépasser la limite de 2 147 483 647 euros.';
+        END IF;
+
+        -- Vérifier que la date est dans le passé
+        IF NEW.date > CURRENT_DATE THEN
+            RAISE EXCEPTION 'La date doit être dans le passé.';
+        END IF;
+
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE TRIGGER check_depense_trigger
+    BEFORE INSERT ON depense
+    FOR EACH ROW
+    EXECUTE FUNCTION check_depense();
+    ''')
+
+def create_trigger_two_decimals(cursor):
+    cursor.execute('''
+    CREATE OR REPLACE FUNCTION enforce_two_decimals()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        -- Arrondir le prix à deux décimales
+        NEW.prix := ROUND(NEW.prix::numeric, 2);
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE TRIGGER enforce_two_decimals_trigger
+    BEFORE INSERT OR UPDATE ON depense
+    FOR EACH ROW
+    EXECUTE FUNCTION enforce_two_decimals();
+    ''')
+
 if __name__ == "__main__":
     conn = psycopg2.connect(
         dbname="sharecount",
@@ -169,6 +211,8 @@ if __name__ == "__main__":
 
     drop_tables(cursor)
     create_tables(cursor)
+    create_trigger(cursor)
+    create_trigger_two_decimals(cursor)    
 
     conn.commit()
     cursor.close()
