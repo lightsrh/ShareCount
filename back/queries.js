@@ -26,8 +26,8 @@ function getLogin(username, response) {
         }
       }
     });
-  }
-  
+}  
+
 
   function getGroups(request, response) {
     login = request.session.userLogin;

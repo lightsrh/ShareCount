@@ -98,13 +98,12 @@ app.post('/login', async (req, res) => {
           req.session.userLogin = user.login;
           return res.sendFile(path.join(__dirname, "../front/views/home.html"));
       } else {
-        return res.sendFile(path.join(__dirname, "../front/views/login.html"));
-      }
+        return res.status(500).json({ error: 'identifiants de connexion incorrects : ' + error});      }
     });
 
       
   } catch (error) {
-      console.error('Erreur lors de la connexion :', error);
+    console.error('Erreur lors de la connexion :', error);
       return res.sendStatus(500);
   }
 });
@@ -171,7 +170,6 @@ app.post('/create-group', async (req, res) => {
     const id_groupe = result.rows[0].id;
     await addToGroup(res, id_utilisateur, id_groupe);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Erreur lors de la création du groupe' });
   }
 });
@@ -184,20 +182,20 @@ app.post('/create-depense', async (req, res) => {
   try {
     for (let i = 0; i < utilisateur_dette.length; i++) {
       const userdetteLogin = utilisateur_dette[i];
-      //get id of userdetteLogin and of payer
       const result1 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [userdetteLogin]);
       const userdette = result1.rows[0].id;
       const result2 = await pool.query('SELECT id FROM utilisateurs WHERE login = $1', [payer]);
       const utilisateur_acheteur = result2.rows[0].id;
+
       const result = await pool.query('INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [utilisateur_acheteur, userdette, groupe, montant / utilisateur_dette.length, date, infos]);
       insertedRows.push(result.rows[0]);
     }
     res.status(200).json(insertedRows);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erreur lors de la création de la dépense' });
+    res.status(500).json({ error: 'Erreur lors de la création de la dépense : '+ error });
   }
 });
+
 
 
 
@@ -210,7 +208,6 @@ app.post('/joinGroup', async (req, res) => {
     const id_groupe = result2.rows[0].id;
     await addToGroup(res, id_utilisateur, id_groupe);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Erreur lors de l\'ajout au groupe' });
   }
 });
