@@ -1,5 +1,4 @@
 const express = require("express");
-const multer = require("multer");
 const path = require("path");
 const sessions = require('express-session');
 const cookieParser = require("cookie-parser");
@@ -11,19 +10,16 @@ require('dotenv').config();
 
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'sharecount', // Nom de la base de données que vous avez créée
-    password: 'postgres',
-    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 });
 
 const { getUsers, getGroups, createUser, addToGroup, getToken, getDepenses, rembourser, getTransactions } = require("./queries");
-const { get } = require("http");
 const port = 8080;
 const app = express();
-
-const storage = multer.memoryStorage();
 
 const oneDay = 1000 * 60 * 60 * 24;     //milliseconds in a day
 app.use(sessions({
