@@ -94,12 +94,14 @@ app.post('/login', async (req, res) => {
       }
       const user = results.rows[0];
       bcrypt.compare(req.body.password, user.password).then(function(result) {
-        if (result) {
+      if (result) {
           req.session.userLogin = user.login;
           return res.sendFile(path.join(__dirname, "../front/views/home.html"));
       } else {
-        return res.status(500).json({ error: 'identifiants de connexion incorrects : ' + error});      }
-    });
+        return res.sendFile(path.join(__dirname, "../front/views/login.html"));
+      }
+
+      });
 
       
   } catch (error) {
@@ -192,7 +194,7 @@ app.post('/create-depense', async (req, res) => {
     }
     res.status(200).json(insertedRows);
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la création de la dépense : '+ error });
+    res.status(500).json({ error: error });
   }
 });
 
