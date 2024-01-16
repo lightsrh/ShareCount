@@ -19,6 +19,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+        crossorigin="anonymous">
     
 </head>
 
@@ -69,8 +72,10 @@
         <div class="row mb-3 text-top">
             <div class="col-md-2 themed-grid-col" id="historique">
                 <h2 id="titre">Historique des dépenses</h2>
-                <div id="dynamicDepenseContainer" class="container flex-container flex-wrap"></div>
-            </div>
+                <div id="historiqueDepensesContainer" class="scroll-container">
+                    <div id="dynamicDepenseContainer" class="container flex-container flex-wrap"></div>
+                </div>
+            </div>            
             <div class="col-md-6 themed-grid-col" style="align-self: start;">
                 <div id="dynamicCardsContainer" class="container"> </div>
             </div>
@@ -288,44 +293,68 @@
                         function updateDynamicDepenseContainer() {
                             const dataDepenses = JSON.parse(localStorage.getItem('dataDepenses')) || [];
                             const dynamicDepenseContainer = document.getElementById('dynamicDepenseContainer');
+
                             if (dataDepenses.length > 0) {
                                 dynamicDepenseContainer.innerHTML = '';
-            
-                                dataDepenses.forEach(dataDepense => {
+
+                                const groupedDepenses = groupBy(dataDepenses, 'id_depense');
+
+                                Object.keys(groupedDepenses).forEach(idDepense => {
+                                    const depensesGroup = groupedDepenses[idDepense];
                                     const depenseCard = document.createElement('div');
-                                    depenseCard.className = 'flex-item custom-card'; // Ajoutez la classe 'custom-card'
-            
-                                    // Formate la date comme jour-mois-année
-                                    const formattedDate = new Date(dataDepense.date).toLocaleDateString('fr-FR', {
-                                        day: 'numeric',
-                                        month: 'numeric',
-                                        year: 'numeric'
-                                    });
-            
+                                    depenseCard.className = 'flex-item custom-card';
+
                                     depenseCard.innerHTML = `
-                                        <div class="card" >
+                                        <div class="card">
                                             <div class="card-body">
-                                                <p class="card-text"><strong>${dataDepense.informations}</strong></p>
-                                                <p class="card-text">Montant: ${dataDepense.prix} €</p>
-                                                <p class="card-text">Date: ${formattedDate}</p>
-                                                <p class="card-text">Acheteur: ${dataDepense.utilisateur_acheteur}</p>
-                                                <p class="card-text">Pour: ${dataDepense.utilisateur_dette}</p>
+                                                ${depensesGroup.map((depense, index) => {
+                                                    const formattedDate = new Date(depense.date).toLocaleDateString('fr-FR', {
+                                                        day: 'numeric',
+                                                        month: 'numeric',
+                                                        year: 'numeric'
+                                                    });
+
+                                                    const commonInfo = index === 0 ? `
+                                                        <p class="card-text"><strong>${depense.titre}</strong></p>
+                                                        <p class="card-text">${depense.informations !== null && depense.informations !== undefined ? depense.informations : ''}</p>
+                                                        <p class="card-text">${depense.total_prix } € le ${formattedDate}</p>
+                                                        <p class="card-text">De : ${depense.utilisateur_acheteur}</p>
+                                                        <p class="card-text">Pour: ${Array.isArray(depense.utilisateur_dette) ? depense.utilisateur_dette.join(', ') : depense.utilisateur_dette}</p>
+                                                    ` : '';
+
+                                                    
+                                                    const utilisateursDette = index === 0 ? '' : `${Array.isArray(depense.utilisateur_dette) ? depense.utilisateur_dette.join(', ') : depense.utilisateur_dette}`;
+
+                                                    return commonInfo + utilisateursDette;
+                                                }).join('')}
                                             </div>
                                         </div>
                                     `;
-            
                                     dynamicDepenseContainer.appendChild(depenseCard);
                                 });
-                            }
-                            else{
-                                //show no depense but not in a card
+                            } else {
+                                // Show no depense but not in a card
                                 dynamicDepenseContainer.innerHTML = `
                                     <p class="card-text"><strong>Aucune dépense</strong></p>
                                     <p class="card-text">Vous pouvez en créer une en cliquant sur le bouton "Créer une nouvelle dépense"</p>
-                                    ` 
-                                
+                                `;
                             }
+                        }                       
+
+                        
+                        
+
+                        function groupBy(array, key) {
+                            return array.reduce((result, currentValue) => {
+                                (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
+                                console.log(result);
+                                return result;
+                            }, {});
                         }
+
+
+                        
+
                     </script>
                 </div>
             </div>

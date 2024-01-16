@@ -1,6 +1,8 @@
 const { Pool } = require('pg');
 const path = require('path');
 const { response } = require('express');
+const { v4: uuidv4 } = require('uuid');
+
 
 
 const pool = new Pool({
@@ -281,8 +283,9 @@ function getTransactions(request, response) {
 
 function rembourser(request, response) {
     const { utilisateur_1, utilisateur_2, groupId, date, montant  } = request.body;
-        const infos = "Remboursement";
-    pool.query('INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, informations) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [utilisateur_1, utilisateur_2, groupId, montant, date, infos], (error, results) => {
+        const titre = "Remboursement";
+        const id_depense = uuidv4(); 
+    pool.query('INSERT INTO depense (utilisateur_acheteur, utilisateur_dette, groupe, prix, date, titre, id_depense, total_prix) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [utilisateur_1, utilisateur_2, groupId, montant, date, titre, id_depense, montant], (error, results) => {
         if (error) {
             console.error("Erreur :", error);
             response.status(500).json({ error: "Erreur lors de la récupération des dépenses" });
