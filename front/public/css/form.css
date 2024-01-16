@@ -5,7 +5,6 @@ body {
     padding: 0;
 }
 
-/* Header styles */
 header {
     background: linear-gradient(to right, #090ca1a9, #090ca149);
     padding: 10px;
@@ -27,7 +26,6 @@ header a {
     text-decoration: none;
 }
 
-/* Main content styles */
 .main-content {
     max-width: 800px;
     margin: 20px auto;
@@ -45,7 +43,6 @@ header a {
     line-height: 1.5;
 }
 
-/* Footer styles */
 footer {
     position: fixed;
     bottom: 0;
@@ -60,7 +57,6 @@ footer p {
     margin: 0;
 }
 
-/* Links styles */
 a {
     color: #1a1818;
     text-decoration: none;
@@ -70,7 +66,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Form styles */
 .container {
     display: flex;
     flex-direction: column;
@@ -111,4 +106,6 @@ form button {
     cursor: pointer;
 }
 
-
+#formDepense {
+    margin-top: 70px;
+}
