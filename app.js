@@ -30,13 +30,13 @@ app.use(sessions({
 }));
 
 const checkSession = (req, res, next) => {
-    session = req.session;
-    if (session.userLogin) {
+  const session = req.session;  // Ajoutez 'const' ici pour déclarer la variable localement
+  if (session.userLogin) {
       next();
-    } else {
+  } else {
       res.redirect('/');
-    }
-  };
+  }
+};
 
 app.use(['/home.html', '/group.html', '/addgroup.html', 'creergroupe.html', 'rejoindregroupe.html'], checkSession);
 
@@ -61,11 +61,11 @@ app.use(cookieParser());
 var session;    //global variable to store session
 
 
-app.use(express.static(path.join(__dirname, '../front/public')));
-app.use('/public', express.static(path.join(__dirname, '../front/public')));
-app.use('/css', express.static(path.join(__dirname, '../front/public/css')));
-app.use('/js', express.static(path.join(__dirname, '../front/public/js')));
-app.use('/img', express.static(path.join(__dirname, '../front/public/img')));
+app.use(express.static(path.join(__dirname, '/front/public')));
+app.use('/public', express.static(path.join(__dirname, '/front/public')));
+app.use('/css', express.static(path.join(__dirname, '/front/public/css')));
+app.use('/js', express.static(path.join(__dirname, '/front/public/js')));
+app.use('/img', express.static(path.join(__dirname, '/front/public/img')));
 
 
 
@@ -76,9 +76,9 @@ app.listen(port, () => {
 app.get("/", (req, res) => {
     session=req.session;
     if(session.userLogin){
-        res.sendFile(path.join(__dirname, "../front/views/home.html"));
+        res.sendFile(path.join(__dirname, "/front/views/home.html"));
     }else
-    res.sendFile(path.join(__dirname, "../front/views/login.html"));
+    res.sendFile(path.join(__dirname, "/front/views/login.html"));
 });
 
 app.post('/login', async (req, res) => {
@@ -86,15 +86,15 @@ app.post('/login', async (req, res) => {
       const results = await pool.query('SELECT login, password FROM utilisateurs WHERE login = $1 LIMIT 1', [req.body.username]);
 
       if (results.rows.length === 0) {
-          return res.sendFile(path.join(__dirname, "../front/views/login.html"));
+          return res.sendFile(path.join(__dirname, "/front/views/login.html"));
       }
       const user = results.rows[0];
       bcrypt.compare(req.body.password, user.password).then(function(result) {
       if (result) {
           req.session.userLogin = user.login;
-          return res.sendFile(path.join(__dirname, "../front/views/home.html"));
+          return res.sendFile(path.join(__dirname, "/front/views/home.html"));
       } else {
-        return res.sendFile(path.join(__dirname, "../front/views/login.html"));
+        return res.sendFile(path.join(__dirname, "/front/views/login.html"));
       }
 
       });
@@ -109,34 +109,34 @@ app.post('/login', async (req, res) => {
   
 
 app.get("/home.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/home.html"));
+    res.sendFile(path.join(__dirname, "/front/views/home.html"));
 });
 
 
 
 app.get('/front/views/group.html', (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/group.html"));
+    res.sendFile(path.join(__dirname, "/front/views/group.html"));
 });
 
 app.get('/creergroupe.html', (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/creergroupe.html"));
+    res.sendFile(path.join(__dirname, "/front/views/creergroupe.html"));
 });
 
 app.get('/rejoindregroupe.html', (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/rejoindregroupe.html"));
+    res.sendFile(path.join(__dirname, "/front/views/rejoindregroupe.html"));
 });
 
 app.get('/depense.html', (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/depense.html"));
+    res.sendFile(path.join(__dirname, "/front/views/depense.html"));
 });
 
 app.get('/create-user', (req, res) => {
-  res.sendFile(path.join(__dirname, "../front/views/creermembre.html"));
+  res.sendFile(path.join(__dirname, "/front/views/creermembre.html"));
 });
 
 
 app.get('/depense', (req, res) => {
-    res.sendFile(path.join(__dirname, "../front/views/depense.html"));
+    res.sendFile(path.join(__dirname, "/front/views/depense.html"));
 }
 );
 
