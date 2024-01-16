@@ -213,6 +213,7 @@ if __name__ == "__main__":
     create_tables(cursor)
     create_trigger(cursor)
     create_trigger_two_decimals(cursor)    
+    
 
     conn.commit()
     cursor.close()
