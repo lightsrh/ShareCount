@@ -29,6 +29,7 @@ services:
 
     depends_on:
       - db
+    restart: always
 
 volumes:
   postgres-data:

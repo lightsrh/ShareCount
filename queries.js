@@ -54,7 +54,7 @@ function getUsers(request, response) {
     const userLogin = request.session.userLogin;
 
     if (groupId === null) {   
-        response.sendFile(path.join(__dirname, "/front/views/home.html"));
+        return response.sendFile(path.join(__dirname, "/front/views/home.html"));
     } else {
         pool.query('select id from utilisateurs where login = $1;', [userLogin], (error, results) => {
             if (error) {
