@@ -52,37 +52,47 @@ function getLogin(username, response) {
 function getUsers(request, response) {
     const groupId = request.params.groupId;
     const userLogin = request.session.userLogin;
-    pool.query('select id from utilisateurs where login = $1;', [userLogin], (error, results) => {
-        if (error) {
-            throw error;
-        }
-        const userId = results.rows[0].id;
-    
-        pool.query('select * from utilisateur_group where id_utilisateur = $1 and id_groupe = $2;', [userId, groupId], (error, results) => {
+    console.log(groupId);
+
+    if (groupId === null) {   
+        response.sendFile(path.join(__dirname, "/front/views/home.html"));
+    } else {
+        pool.query('select id from utilisateurs where login = $1;', [userLogin], (error, results) => {
             if (error) {
                 throw error;
             }
-            if (results.rows.length === 0) {
-                response.status(401).json({ error: 'user_not_found' });
-            }
-            else {
-                pool.query(
-                    'SELECT utilisateurs.id, utilisateurs.nom, utilisateurs.prenom, utilisateurs.photo, utilisateurs.login FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
-                    [groupId],
-                    (error, results) => {
-                        if (error) {
-                            response.status(500).json({ error });
-                        } else {
-                            response.status(200).json(results.rows);
+            const userId = results.rows[0].id;
+        
+            pool.query('select * from utilisateur_group where id_utilisateur = $1 and id_groupe = $2;', [userId, groupId], (error, results) => {
+                console.log(results)
+                if (results === undefined) {
+                    response.status(500).json({ error : 'error while trying to fetch users' });
+                } else if (results.rows.length === 0 ) {
+                    response.status(401).json({ error: 'user_not_found' });
+                } else {
+                    pool.query(
+                        'SELECT utilisateurs.id, utilisateurs.nom, utilisateurs.prenom, utilisateurs.photo, utilisateurs.login FROM utilisateur_group INNER JOIN utilisateurs ON utilisateur_group.id_utilisateur  = utilisateurs.id WHERE utilisateur_group.id_groupe = $1;',
+                        [groupId],
+                        (error, results) => {
+                            if (error) {
+                                response.status(500).json({ error });
+                            } else {
+                                response.status(200).json(results.rows);
+                            }
                         }
-                    }
-                );  
-            }}); 
-     });  
+                    );  
+                }
+            }); 
+        });
+    }
 }
+
 
 function getToken (request, response) {
     const groupId = request.params.groupId;
+    if (groupId === undefined) {   
+        response.sendFile(path.join(__dirname, "/front/views/home.html"));
+    }
     pool.query(
         'SELECT token FROM groupe WHERE id = $1;',
         [groupId],
@@ -152,6 +162,9 @@ function deleteById(request, response) {
 function getDepenses(request, response) {    
 
     const groupId = request.params.groupId;
+    if (groupId === undefined) {   
+        response.sendFile(path.join(__dirname, "/front/views/home.html"));
+    }
 
     pool.query(
         {
@@ -227,6 +240,9 @@ function getDepenses(request, response) {
 
 function getTransactions(request, response) {
     const groupId = request.params.groupId;
+    if (groupId === undefined) {   
+        response.sendFile(path.join(__dirname, "/front/views/home.html"));
+    }
     pool.query('SELECT * FROM depense WHERE groupe = $1;', [groupId], (error, results) => {
         if (error) {
             console.error("Erreur :", error);
