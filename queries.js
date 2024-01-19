@@ -52,7 +52,6 @@ function getLogin(username, response) {
 function getUsers(request, response) {
     const groupId = request.params.groupId;
     const userLogin = request.session.userLogin;
-    console.log(groupId);
 
     if (groupId === null) {   
         response.sendFile(path.join(__dirname, "/front/views/home.html"));
@@ -64,7 +63,6 @@ function getUsers(request, response) {
             const userId = results.rows[0].id;
         
             pool.query('select * from utilisateur_group where id_utilisateur = $1 and id_groupe = $2;', [userId, groupId], (error, results) => {
-                console.log(results)
                 if (results === undefined) {
                     response.status(500).json({ error : 'error while trying to fetch users' });
                 } else if (results.rows.length === 0 ) {

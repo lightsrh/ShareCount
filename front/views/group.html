@@ -257,7 +257,6 @@
                                         montant: Math.abs(userTotal)
                                     };
 
-                                    console.log(remboursementData);
 
                                     fetch('/rembourser', {
                                         method: 'POST',
@@ -339,7 +338,6 @@
                                     dynamicDepenseContainer.appendChild(depenseCard);
                                 });
                             } else {
-                                console.log(dataDepenses.length);
                                 if (dataDepenses.length === 0){
                                     dynamicDepenseContainer.innerHTML = `
                                         <p class="card-text"><strong>Aucune dépense</strong></p>
@@ -365,7 +363,6 @@
                         function groupBy(array, key) {
                             return array.reduce((result, currentValue) => {
                                 (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
-                                console.log(result);
                                 return result;
                             }, {});
                         }
@@ -392,7 +389,6 @@
         
                 const userId = loginData[1];
                 const userLogin = loginData[0];
-                console.log(dettesData);
         
                 const userDettesData = dettesData.filter(dette => {
                     if (dette.utilisateur_1 === userId) {
