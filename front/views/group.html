@@ -142,7 +142,7 @@
                             fetch(`/getLogin`)
                                 .then(response => response.json())
                                 .then(datalogin => {
-                                                                            localStorage.setItem('login', JSON.stringify(datalogin));
+                                        localStorage.setItem('login', JSON.stringify(datalogin));
                                         histogramme();
                                         const dynamicCardsContainer = document.getElementById('dynamicCardsContainer');
                                         dynamicCardsContainer.innerHTML = '';
@@ -292,6 +292,9 @@
                     <script>
                         function updateDynamicDepenseContainer() {
                             const dataDepenses = JSON.parse(localStorage.getItem('dataDepenses')) || [];
+                            if (dataDepenses.length === 0) {
+                                depenseLink
+                            }
                             const dynamicDepenseContainer = document.getElementById('dynamicDepenseContainer');
 
                             if (dataDepenses.length > 0) {
@@ -333,11 +336,23 @@
                                     dynamicDepenseContainer.appendChild(depenseCard);
                                 });
                             } else {
-                                // Show no depense but not in a card
-                                dynamicDepenseContainer.innerHTML = `
-                                    <p class="card-text"><strong>Aucune dépense</strong></p>
-                                    <p class="card-text">Vous pouvez en créer une en cliquant sur le bouton "Créer une nouvelle dépense"</p>
-                                `;
+                                console.log(dataDepenses.length);
+                                if (dataDepenses.length === 0){
+                                    dynamicDepenseContainer.innerHTML = `
+                                        <p class="card-text"><strong>Aucune dépense</strong></p>
+                                        <p class="card-text">Veuillez ajouter des utilisateurs avant de créer une dépense"</p>
+                                    `;
+                                    const depenseLink = document.getElementById('depenseLink');
+                                    depenseLink.parentNode.removeChild(depenseLink);
+                                }
+                                else {
+                                    dynamicDepenseContainer.innerHTML = `
+                                        <p class="card-text"><strong>Aucune dépense</strong></p>
+                                        <p class="card-text">Vous pouvez en créer une en cliquant sur le bouton "Menu" puis "Créer une nouvelle dépense"</p>
+                                    `;
+
+                                    
+                                }
                             }
                         }                       
 
