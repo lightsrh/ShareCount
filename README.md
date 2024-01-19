@@ -37,6 +37,13 @@ To use the ShareCount app, follow these steps:
     ```
     This will start the docker images for the database and the rest of the application
 
+3. Launch the Web Browser :
+
+    To launch the app you can go to this address in your favorite web browser
+    ```
+    http://localhost:8080
+    ```
+
 ## Main features
 
 ### Login page
