@@ -26,6 +26,11 @@ To install the ShareCount app, follow these steps:
 
 To use the ShareCount app, follow these steps:
 
+1. Build the docker images
+    ```
+    docker compose build
+    ```
+
 1. Start the application:
     ```bash
     ./setup.sh
