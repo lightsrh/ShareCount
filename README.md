@@ -59,3 +59,6 @@ This page display all the groups you are a part of. You can click on a group to 
 When you click on a group you go to its reserved page. On the left all the expenses are listed, with the title, the informations about the expense, the amount, the date and the users concerned by it.
 On the center cards display all the users and the money you owe to them / they owe you. If you are at balance only the name of the user is displayed. 
 FInally on the right a graphic display all the money you owe and need to get back
+
+
+add token to join group at start
