@@ -12,7 +12,7 @@ Please see the TAD for more explanations about the architecture of this project,
 
 ## Prerequisites
 
-You need to have python and docker installed.
+You need to have python, NodeJs and docker installed.
 
 
 ## Installation
