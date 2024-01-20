@@ -1,6 +1,7 @@
 # ShareCount App
 
 This is a web application that allows users to count the number of shares for a given URL on various social media platforms.
+Please see the TAD for more explanations about the architecture of this project, and informations about this project (French version available).
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
