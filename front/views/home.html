@@ -92,12 +92,13 @@
                                 card.className = 'flex-item';
                                 card.innerHTML = `
                                     <div class="card custom-card" onclick="redirectToUserPage('${item.id}')">
-                                        <img src="/img/${item.photo}" class="card-img-top" alt="Image du groupe">
                                         <div class="card-body">
                                             <h5 class="card-title">${item.nom}</h5>
                                         </div>
                                     </div>
                                 `;
+                                //<img src="/img/${item.photo}" class="card-img-top" alt="Image du groupe">
+
                                 dynamicCardsContainer.appendChild(card);
                             });
 
