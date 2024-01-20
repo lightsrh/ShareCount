@@ -12,10 +12,8 @@ Please see the TAD for more explanations about the architecture of this project,
 
 ## Prerequisites
 
-You need to have the venv module installed, because you will create a virtual environment when installing the python package.
-    ```
-    sudo apt install python3-venv
-    ```
+You need to have python and docker installed.
+
 
 ## Installation
 
@@ -41,11 +39,25 @@ To use the ShareCount app, follow these steps:
     docker compose build
     ```
 
-1. Start the application:
+    You can then choose to launch the app in deploy or developpment mode
+
+2. Start the application in deploy mode:
     ``` bash
     ./setup.sh
     ```
     This will start the docker images for the database and the rest of the application
+
+2. Start the application in developpment mode:
+    ``` bash
+    docker compose up db
+    python3 setup_db.py
+    nodemon app.js
+    ```
+    You need the nodemon package installed for this.
+    If you don't have it
+    ``` bash
+    npm install nodemon
+    ```
 
 3. Launch the Web Browser :
 
@@ -104,5 +116,5 @@ To stop the app you have to destroy the docker images you have created. In the t
 
 ``` bash
 docker compose down
-docker image rm back-app:latest postgres:latest 
+docker image rm sharecount-app:latest postgres:latest 
 ```
