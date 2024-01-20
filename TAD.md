@@ -29,40 +29,42 @@
 ### Database:
 - PostgreSQL
 
-I also used docker to containerize the database in an image and the Node server with the html pages in an other on 
+I also use docker to containerize the database and the Node server with the html pages.
 
 ## Justification of Technology Choices
 
 ### Front-end:
-The choice of HTML, JavaScript, and CSS for the front end was driven by the need for simplicity and a familiar foundation. As other technologies were new, starting with a known stack allowed for a smoother learning curve.
+
+For the front-end I needed simplicity and a well-known foundation. It led to the selection of HTML, JavaScript, and CSS as well as Bootstrap. Starting with a known stack made the learning curve easier for the rest of the app. 
 
 ### Back-end:
-NodeJS was chosen for the backend due to its ease of use and scalability. Express provided a robust framework for building the server. bcrypt was selected for password encryption based on its proven security. uuid was used for token generation, providing unique identifiers securely.
+I selected NodeJS for the backend because of its scalability and user-friendliness. Express is a stable option for constructing the server. Because bcrypt has a track record of security, I use it for the password encryption. Tokens are generated using uuid, which securely provides unique identifiers for the groups. 
 
 ### Database:
-PostgreSQL was preferred over MySQL due to the developer's proficiency and classroom exposure. Docker was chosen to containerize the database, enhancing deployment and scalability.
+Because of my experience and our classes, I chose PostgreSQL over MySQL. The database was containerized using Docker, which improved deployment and scalability.
+
 
 ## Architecture Explanation
 
 ### Front-end:
-The front-end architecture comprises multiple HTML pages, incorporating inline JavaScript and CSS. Images for users and groups are stored alongside pages in static and are not implemented in the app.
+The front-end architecture consists of several HTML pages with CSS and JavaScript inline. User and group images are not used in the app, but they are implemented in the database.
 
 ### Back-end:
-The NodeJS server, powered by Express, handles backend operations. bcrypt ensures secure password storage, and uuid facilitates token generation. Docker is used for containerized deployment.
+Backend tasks are managed by the NodeJS server using Express. Secure password storage is guaranteed by bcrypt, and token generation is made easier by uuid. For containerized deployment, Docker is utilized.
 
 ### Database:
-PostgreSQL serves as the database, deployed within a Docker image. The server, responsible for file paths, includes HTML and CSS pages in its image.
+The app uses PostgreSQL as the database, deployed within a Docker image. The server, responsible for file paths, includes HTML and CSS pages in its image.
 
 ## Key Architecture Details
 
-- **Session Management:** Implemented for user authentication using the knowledge acquired in class.
-- **Encryption Choice:** Selection of bcrypt for password storage due to its security advantages over sha256.
-- **Deployment Strategy:** Use of Docker for both the database and NodeJS server for seamless deployment and scalability.
+- **Session Management:** Implemented for user authentication using the method learned in class.
+- **Encryption Choice:** Use of bcrypt for password storage due to its security advantages over sha256, the method I was envisaging at first.
+- **Deployment Strategy:** Use of Docker for both the database and NodeJS server for an easy deployment and scalability.
 
 ## Challenges and Key Points
 
-- **Storage of Images:** Difficulty in managing storage of user and group images in the database. An area for future improvement and optimization.
-- **Learning Curve:** Acquiring proficiency in Docker and NodeJS was challenging but essential for project success.
+- **Storage of Images:** Difficulty in managing storage of user and group images in the database. It is an area for future implementation.
+- **Learning Curve:** Acquiring proficiency in Docker images building and NodeJS was challenging but essential for project success.
 
 ## Post-Mortem
 
@@ -70,8 +72,8 @@ PostgreSQL serves as the database, deployed within a Docker image. The server, r
 
 #### Personal Reflection:
 
-- **Individual Learning:** Gained insights into various technologies but faced limitations due to the absence of collaborative input, especially when choosing the stack. 
-- **Deployment Issues:** Difficulties in deploying due to suboptimal technology choices, hindering the project's accessibility.
+- **Individual Learning:** I gained knowledge into various technologies but faced limitations due to the absence of collaborative input, especially when choosing the stack at the beginning of the project. 
+- **Deployment Issues:** Difficulties in deploying due to non optimal technology choices, preventing the project's accessibility.
 
 
 ### Technological Aspect:
@@ -82,8 +84,8 @@ PostgreSQL serves as the database, deployed within a Docker image. The server, r
 
 #### Areas for Improvement:
 - **Image Storage Optimization:** Explore better methods for handling image storage.
-- **Technology Choices:** Reevaluate technology choices for potential optimization. Express and session are not compatible with a deployement in Kubernetes as it is a security breach. JWT seams like a great alternative to it in the future.
-The images are also deployed in docker hub but due to this security breach it is impossible to use them in the current state.
+- **Technology Choices:** Reevaluate technology choices for potential optimization. Express and sessions are not compatible with a deployement in Kubernetes as it is a security breach. JWT seams like a great alternative to it in the future.
+The docker images are also deployed in docker hub but due to this security breach it is impossible to use them in the current state.
 
 ## Conclusion
 
