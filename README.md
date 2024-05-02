@@ -13,7 +13,7 @@ Please see the TAD for more explanations about the architecture of this project,
 ## Prerequisites
 
 You need to have python3, NodeJs and docker installed.
-You must place yourself in a python virtual environment with psycopg2 installed.
+You must place yourself in a python virtual environment with psycopg2 installed (library psycopg2-binary)
 
 
 ## Installation
