@@ -40,7 +40,7 @@ To use the ShareCount app, follow these steps:
     docker compose build
     ```
 
-    You can then choose to launch the app in deploy or developpment mode
+    You can then choose to launch the app in deploy or development mode
 
 2. Start the application in deploy mode:
     ``` bash
@@ -48,7 +48,7 @@ To use the ShareCount app, follow these steps:
     ```
     This will start the docker images for the database and the rest of the application
 
-2. Start the application in developpment mode:
+2. Start the application in development mode:
     ``` bash
     docker compose up db
     python3 setup_db.py
