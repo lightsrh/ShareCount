@@ -42,7 +42,7 @@ source venv/bin/activate
 pip install psycopg2-binary
 ```
 
-You also need to create a .env file with the following content :
+You also need to create a .env file with the following content at the root of the project :
 ```bash
 SECRET_SESSION = 'thisismysecrctekeyfhrgfgrfrty84fwir767'
 NAME = 'admin'
@@ -67,7 +67,7 @@ To use the ShareCount app, follow these steps
 
     You can then choose to launch the app in deploy or development mode (step 2 ou 3)
 
-2. Start the application in deploy mode:
+2. Start the application in deploy mode (useless as the docker image is not deployed):
 
     ``` bash
     ./setup.sh
@@ -78,7 +78,6 @@ To use the ShareCount app, follow these steps
 2. Start the application in development mode:
 
     ``` bash
-    npm i
     docker compose up db -d
     python3 setup_db.py
     nodemon app.js
